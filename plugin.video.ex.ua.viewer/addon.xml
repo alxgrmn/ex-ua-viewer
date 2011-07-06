@@ -7,8 +7,8 @@
 		<provides>video</provides>
 	</extension>
 	<extension point="xbmc.addon.repository" name="Ex.Ua Viewer Repository">
-		<info compressed="false">http://ex-ua-viewer.googlecode.com/files/addons.xml</info>
-		<datadir zip="false">http://ex-ua-viewer.googlecode.com/hg/</datadir>
+		<info compressed="false">http://repo.ex-ua-viewer.googlecode.com/hg/addons.xml</info>
+			<datadir zip="false">http://repo.ex-ua-viewer.googlecode.com/hg/</datadir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary>Смотрите видео с сайта http://ex.ua/</summary>
