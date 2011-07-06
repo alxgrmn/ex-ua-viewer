@@ -55,7 +55,18 @@ class Core:
 		('</.+?>', ' '),
 		('&nbsp;', ' '),
 	)
-
+	skinOptimizations = (
+		{#Confluence
+			'list': 50,
+			'info': 50,
+			'icons': 500,
+		},
+		{#Transperency!
+			'list': 50,
+			'info': 51,
+			'icons': 53,
+		}
+	)
 	def __init__(self, localization):
 		self.localization = localization
 
@@ -75,7 +86,7 @@ class Core:
 			self.drawItem(self.localize('< User Logout >'), 'logoutUser', image=self.ROOT + '/icons/logout.png')
 		else:
 			self.drawItem(self.localize('< User Login >'), 'loginUser', image=self.ROOT + '/icons/login.png')
-		self.lockView(50)
+		self.lockView('list')
 		xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
 
 	def openSection(self, params = {}):
@@ -104,7 +115,7 @@ class Core:
 			]
 			self.drawItem(self.unescape(title + comments), 'openPage', self.URL + link, image + '?200', contextMenu=contextMenu)
 		self.drawPaging(videos, 'openSection')
-		self.lockView(51)
+		self.lockView('info')
 		xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
 
 	def openSearch(self, params = {}):
@@ -134,7 +145,7 @@ class Core:
 				title = "%s [%s]" % (title, comments.group(1))
 			self.drawItem(self.unescape(title), 'openPage', self.URL + link, image + '?200')
 		self.drawPaging(videos, 'openSearch')
-		self.lockView(51)
+		self.lockView('info')
 		xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
 
 	def searchUser(self, params = {}):
@@ -187,9 +198,11 @@ class Core:
 
 	def showDetails(self, params = {}):
 		xbmc.executebuiltin("Action(Info)")
-		if self.__settings__.getSetting("skin_optimization"):
+		if '1' == self.__settings__.getSetting("skin_optimization"):#Transperency
 			xbmc.executebuiltin("ActivateWindow(1113)")
 			xbmc.executebuiltin("Action(Right)")
+		if '0' == self.__settings__.getSetting("skin_optimization"):#Confluence
+			xbmc.executebuiltin("Action(Up)")
 
 	def openPage(self, params = {}):
 		get = params.get
@@ -228,7 +241,7 @@ class Core:
 			xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=True)
 			if self.__settings__.getSetting("auth"):
 				self.drawItem(self.localize('Leave\nComment'), 'leaveComment', filelist.group(1), self.ROOT + '/icons/comment.png', False)
-			self.lockView(53)
+			self.lockView('icons')
 			xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
 		else:
 			url = '%s?action=%s&url=%s&contentReady=True' % (sys.argv[0], 'openSection', get("url"))
@@ -395,8 +408,8 @@ class Core:
 			return
 
 	def lockView(self, viewId):
-		if self.__settings__.getSetting("lock_view"):
-			xbmc.executebuiltin("Container.SetViewMode(%s)" % str(viewId))
+		if self.__settings__.getSetting("lock_view"):				
+			xbmc.executebuiltin("Container.SetViewMode(%s)" % str(self.skinOptimizations[int(self.__settings__.getSetting("skin_optimization"))][viewId]))
 
 	def getParameters(self, parameterString):
 		commands = {}

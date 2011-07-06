@@ -21,8 +21,9 @@
 	/>
 	<setting
 		id      = "skin_optimization"
-		type    = "bool"
+		type    = "enum"
+		values  = "Confluence|Transperency"
 		label   = "30004"
-		default = "false"
+		default = "0"
 	/>
 </settings>
