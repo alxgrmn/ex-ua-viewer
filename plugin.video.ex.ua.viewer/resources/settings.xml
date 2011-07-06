@@ -1,0 +1,28 @@
+﻿<settings>
+	<setting
+		id      = "language"
+		type    = "enum"
+		values  = "ru|uk|en"
+		label   = "30001"
+		default = "0"
+	/>
+	<setting
+		id      = "rowcount"
+		type    = "enum"
+		values  = "15|30|50|100"
+		label   = "30002"
+		default = "1"
+	/>
+	<setting
+		id      = "lock_view"
+		type    = "bool"
+		label   = "30003"
+		default = "true"
+	/>
+	<setting
+		id      = "skin_optimization"
+		type    = "bool"
+		label   = "30004"
+		default = "false"
+	/>
+</settings>

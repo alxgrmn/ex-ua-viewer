@@ -1,0 +1,62 @@
+﻿[B]Version 1.0.4[/B]
+- Changed addon settings spelling
+- Implemented user bookmarks page
+- Added poster to playback screen
+- Added poster to favorites list
+
+[B]Version 1.0.0[/B]
+- Added ability for similar searching by title
+
+[B]Version 0.9.9.9rc[/B]
+- Added localization for addon settings window
+- Changed types of addon settings
+
+[B]Version 0.9.9.8rc[/B]
+- Fixed addon.xml
+- Added changelog
+- Added usability changes
+
+[B]Version 0.9.9.5rc[/B]
+- Added localization
+
+[B]Version 0.9.9.2rc[/B]
+- Added custom icons
+- Changed some usability issues
+
+[B]Version 0.9.9rc[/B]
+- Implemented materials commenting
+- Added CAPTCHA support on incorrect auth
+
+[B]Version 0.9.8.6b[/B]
+- Fixed bug with auth
+
+[B]Version 0.9.8.3b[/B]
+- Added options for addon settings
+- Implemented lock view mode switcher
+- Implemented skin optimization switcher
+
+[B]Version 0.9.8b[/B]
+- Fixed search mechanism
+
+[B]Version 0.9.7.2b[/B]
+- Fixed files encoding
+
+[B]Version 0.9.7b[/B]
+- Added ability for user auth
+- Created repository for code
+- Added licence headings
+
+[B]Version 0.9.6b[/B]
+- Fixed broken FLV playlist after ex.ua player changes
+
+[B]Version 0.9.5b[/B]
+- Added ability for description and comments reading
+- Added separation for FLV and M3U playlists
+- Added subfolders support
+- Added user page search
+- Added separation for articles and items
+- Fixed bug with FLV playlists
+
+[B]Version 0.9b[/B]
+- Added addon functionality implementation from scratch
+- Added search ability
