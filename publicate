@@ -1,0 +1,5 @@
+#!/bin/bash
+cd /home/.xbmc/addons/
+hg add *
+hg commit
+hg push -f https://vadim.skorba@ex-ua-viewer.googlecode.com/hg/

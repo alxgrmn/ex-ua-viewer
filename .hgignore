@@ -1,1 +1,5 @@
-^.*/
+syntax: regexp
+^(?!plugin\.video\.ex\.ua\.viewer).+$
+
+syntax: regexp
+\.pyo$

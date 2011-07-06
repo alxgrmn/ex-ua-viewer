@@ -1,4 +1,8 @@
 ﻿[B]Version 1.0.4[/B]
+- Implemented autoupdate
+- Added deploy script
+
+[B]Version 1.0.4[/B]
 - Changed addon settings spelling
 - Implemented user bookmarks page
 - Added poster to playback screen

@@ -15,17 +15,13 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-	
-	
-	
 '''
 
 import sys, xbmc, xbmcaddon, os
 
-__version__ = "1.0.4"
-__plugin__ = "Ex.Ua Viewer v." + __version__
-__author__ = "vadim.skorba@gmail.com"
 __settings__ = xbmcaddon.Addon(id='plugin.video.ex.ua.viewer')
+__version__ = __settings__.getAddonInfo('version')
+__plugin__ = __settings__.getAddonInfo('name') + " v." + __version__
 __root__ = os.getcwd()
 
 if (__name__ == "__main__" ):
