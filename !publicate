@@ -1,5 +1,14 @@
 #!/bin/bash
 cd "`dirname \"$0\"`"
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > addons.xml
+echo "<addons>" >> addons.xml
+{
+read LINE;
+while read LINE; do
+  echo "$LINE" >> addons.xml
+done 
+} < plugin.video.ex.ua.viewer/addon.xml
+echo "</addons>" >> addons.xml
 hg add *
 hg commit
 hg push -f https://vadim.skorba@ex-ua-viewer.googlecode.com/hg/
