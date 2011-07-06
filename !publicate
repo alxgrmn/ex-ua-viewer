@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/.xbmc/addons/
+cd "`dirname \"$0\"`"
 hg add *
 hg commit
 hg push -f https://vadim.skorba@ex-ua-viewer.googlecode.com/hg/
