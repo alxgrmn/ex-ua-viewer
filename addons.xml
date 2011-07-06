@@ -1,21 +1,454 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addons>
-	<addon id="plugin.video.ex.ua.viewer" name="Ex.Ua Viewer" version="1.0.4" provider-name="vadim.skorba@gmail.com">
-		<requires>
-			<import addon="xbmc.python" version="1.0"/>
-		</requires>
-		<extension point="xbmc.python.pluginsource" provides="video" library="default.py">
-			<provides>video</provides>
-		</extension>
-		<extension point="xbmc.addon.repository" name="Ex.Ua Viewer Repository">
-			<info compressed="false">http://repo.ex-ua-viewer.googlecode.com/hg/addons.xml</info>
-			<datadir zip="false">http://repo.ex-ua-viewer.googlecode.com/hg/</datadir>
-		</extension>
-		<extension point="xbmc.addon.metadata">
-			<summary>Смотрите видео с сайта http://ex.ua/</summary>
-			<description>Смотрите видео с сайта http://ex.ua/</description>
-			<platform>all</platform>
-			<disclaimer>GNU GPLv3 http://www.gnu.org/licenses/</disclaimer>
-		</extension>
-	</addon>
+<addon
+	id="skin.transparency"
+	version="3.11.7"
+	name="Transparency!"
+	provider-name="ronie">
+	<requires>
+		<import	addon="xbmc.gui" version="2.11"/>
+		<import addon="script.favourites" version="1.0.5"/>
+		<import addon="script.logo-downloader" version="2.2.0"/>
+		<import addon="script.qlock" version="0.0.4"/>
+		<import addon="script.randomitems" version="1.0.6"/>
+		<import addon="script.recentlyadded" version="2.0.2"/>
+	</requires>
+	<extension point="xbmc.gui.skin"
+	defaultresolution="720p"
+	defaultresolutionwide="720p"
+	defaultthemename="Textures.xbt"
+	effectslowdown="1"
+	debugging="false"/>
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en">Transparency! a fanart skin for XBMC</summary>
+		<summary lang="cr">Transparency! fanart skin za XBMC</summary>
+		<summary lang="da">Transparency! et fanart skin til XBMC</summary>
+		<summary lang="de">Transparency! ein fanart skin für XBMC</summary>
+		<summary lang="es">Transparency! Un skin fanart para XBMC</summary>
+		<summary lang="fr">Transparency! Un skin de fanarts pour XBCM</summary>
+		<summary lang="it">Transparency! una skin fanart per XBMC</summary>
+		<summary lang="ja">XBMC用ファンアートスキン Transparency!</summary>
+		<summary lang="ko">Transparency! XBMC 팬아트 스킨</summary>
+		<summary lang="nl">Transparency! een fanart skin voor XBMC</summary>
+		<summary lang="pl">Transparency! skóra z naciskiem na fanart</summary>
+		<summary lang="pt">Transparency! Uma skin fanart para XBMC</summary>
+		<summary lang="sv">Transparency! ett fanart skin till XBMC</summary>
+		<summary lang="zh">Transparency! 一个充分展示同人画的XBMC皮肤</summary>
+		<description lang="en">What is Transparency!? Short answer: a fanart skin. The main goal of Transparency! is showing your fanart, fullscreen, in all of the views, all of the time. Besides this, it also tries to support every neat new feature xbmc has to offer. To save everyone a lot of time and trouble hacking the xml code themselves, all of these new features are already included in the skin, pre-configured and enabled by default (wherever possible).</description>
+		<description lang="cr">Što je Transparency!? Ukratko: fanart skin. Glavni cilj Transparency! skina je prikaz fanart-a, fullscreen, konstantno u svim načinima pregleda. Također, osim toga, pokušava pružiti podršku svakoj novoj mogućnosti koju XBMC podržava. Da bi svima sačuvali vrijeme i spasili ih od problema kod intervencija unutar xml koda, sve nove mogućnosti su unaprijed implementirane u skin, podešene i aktivirane po default-u (gdje god je to bilo moguće).</description>
+		<description lang="da">Hvad er Transparency!? Kort svar: et fanart skin. Hovedformålet med Transparency! er at vise dit fanart, fullscreen, i alle visningsmulighederne, hele tiden. Ud over dette, vil det også forsøge at understøtte alle smarte nye features XBMC har at tilbyde. For at alle kan spare en masse tid og og besvær ved at hacke XML-koden selv, vil alle disse nye funktioner allerede være inkluderet i dette skin, præ-konfigureret og aktiveret som standard (hvis muligt).</description>
+		<description lang="de">Was ist Transparency!? Einfach ausgedrückt : ein fanart skin. Das Hauptaugenmerk von Transparency! liegt darin, eure Fanarts in voller Auflösung, in allen Ansichtsvarianten, zu jeder Zeit anzuzeigen. Davon abgesehen versucht Transparency! alle neuen Features von XBMC zu unterstützen. Um dem Nutzer eine Menge arbeit mit dem editieren des xml-codes zu ersparen, sind alle (neuen) Features bereits in den skin integriert, vorkonfiguriert und standardmäßig aktiviert ( soweit möglich ).</description>
+		<description lang="es">¿Qué es Transparency!? Respuesta corta: un skin fanart. El principal objetivo de Transparency! es mostrar tus fanarts a pantalla completa, en todas las vistas, durate todo el tiempo. Además, también trata de incluir todas las nuevas funcionalidades que ofrece xbmc. Para ahorrar a todos un montón de tiempo y los problemas implícitos que suponen la modificación del código XML, todas estas nuevas funcionalidades ya están incluidas en el skin, pre-configuradas y habilitadas por defecto (siempre que sea posible).</description>
+		<description lang="fr">Qu'est-ce que Transparency!? Réponse courte : un skin de fanart. L'objectif principal de Transparency! est d'afficher vos fanarts, en plein écran, dans toute les vues, tout le temps. Derrière cela, c'est aussi essayer d'inclure toutes les nouvelles et ingénieuses fonctionnalités qu'XBMC a à offrir. Pour vous faire gagner du temps et vous épargner la peine de devoir modifier le code xml par vous même, toutes ces nouvelles fonctionnalités sont déjà intégrées dans le skin, pré-configurées et activées par défaut (lorsque cela est possible).</description>
+		<description lang="it">Cos'è Transparency!? Risposta breve: una skin ottimizzata per fanart. L'obiettivo principale di Transparency! è mostrare le vostre fanart, a pieno schermo, in tutte le viste, in ogni momento. Oltre a questo, cerca di supportare tutte le funzionalità più recenti che XBMC può offrire. Per consentire a tutti di risparmiare tempo e fatica, evitando gli interventi sul codice xml, queste nuove funzionalità sono già incluse nella skin, preconfigurate e attivate di default (ogni qualvolta questo sia possibile).</description>
+		<description lang="ja">Transparency!とは？簡単な回答: それはファンアートスキン。Transparency!が目指すのは、フルスクリーンやその他すべての表示 、そしてどんな時にでもあなたのファンアートを表示することです。それに加えて、XBMCが持つあらゆる素 晴らしい新機能をサポートします。各ユーザーが自らxmlコードをハックする手間を省くため、それらの新機 能は(可能な限り)スキンに含まれており、デフォルトで設定済みであり、有効となっています。</description>
+		<description lang="ko">Transparency!는 무엇인가? 간단히 말하면, 팬아트 스킨이다. Transparency!의 주 목적은 당신의 팬아트, 전체화면을 모든 보기모드에서 언제나 보여주는 것이다. 또한, XBMC가 제공하는 멋진 새로운 기능들을 모두 지원하기위해 노력한다. xml 코드를 바꾸기 위해 겪는 고통과 필요한 시간을 절약시키기 위해, 모든 새로운 기능들이 스킨에 이미 내장되어 있으며, 기본적으로 미리 설정되어 사용가능하도록 되어있다.</description>
+		<description lang="nl">Wat is Transparency!? Simpelweg: een fanart skin. Het voornaamste doel van Transparency! is om je fanart zo goed mogelijk weer te geven, full-screen, in alle weergaven, op alle momenten. Daarnaast streeft Transparency! er naar alle nieuwe features van XBMC te ondersteunen. Gebruikers kunnen zich de tijd en moeite besparen om zelf de xml-code te bewerken: al deze nieuwe features zijn in de skin geïntegreerd, voorgeconfigureerd en standaard geactiveerd (indien mogelijk).</description>
+		<description lang="pl">Czym jest Transparency!? Krótka odpowiedź: skórą dla fanartu. Głównym celem Transparency! jest pokazywanie twoich fanartów, na pełnym ekranie, w każdym widoku, przez cały czas. Skóra próbuje również wspierać wszystkie najnowsze funkcje, które XBMC ma do zaoferowania.</description>
+		<description lang="pt">O que é Transparency!? Resposta rápida: uma skin fanart. O principal objetivo de Transparency! é exibir seu fanart, em tela cheia, em todos as visualizações, o tempo todo. Além disto, ela tenta suportar cada novo recurso que o xbmc tem a oferecer. Para economizar tempo e problemas hackeando os xmls por conta própria, todos estes recursos já estão incluídos na skin, pré-configurados e habilitados por default (onde possível).</description>
+		<description lang="sv">Vad är Transparency!? Det korta svaret är: Ett fanart-vänligt skin. Det övergripande målet med Transparency! är att visa fanart i fullskärm i alla kategorier, hela tiden. Förutom det så försöker Transparency! att utnyttja varenda häftig liten funktion som finns i XBMC. För att slippa krångel med att ändra i xml-koden själv, så är de nya funktionerna inkluderade från början, förkonfigurerade och aktiverade (när det är möjligt).</description>
+		<description lang="zh">Transparency!是什么？简单的说：一个同人画皮肤。Transparency!的主要目标是全屏的、在所有视图、任何时间充分地展示同人画。此外，它还力求完美实现xbmc所提供的新功能。你无需自己费力去修改xml代码，所有新功能已经被皮肤支持，并默认开启（在条件允许的情况下）。</description>
+		<platform>all</platform>
+	</extension>
+</addon>
+
+<addon id="metadata.themoviedb.org"
+       name="The MovieDB"
+       version="1.4.0"
+       provider-name="Team XBMC">
+  <requires>
+    <import addon="xbmc.metadata" version="1.0"/>
+    <import addon="metadata.common.themoviedb.org" version="1.1.0"/>
+    <import addon="metadata.common.hdtrailers.net" version="1.0.6"/>
+    <import addon="metadata.common.imdb.com" version="2.0.8"/>
+    <import addon="plugin.video.youtube" version="2.0.3"/>
+  </requires>
+  <extension point="xbmc.metadata.scraper.movies"
+             language="en"
+             library="tmdb.xml"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">TMDB Movie Scraper</summary>
+    <summary lang="de">Film-Scraper für TheMovieDB</summary>
+    <summary lang="es">Scraper de películas de TheMovieDB</summary>
+    <summary lang="hu">TMDB filmadat leolvasó</summary>
+    <summary lang="nl">TMDb-filmscraper</summary>       <!--Themoviedb.org gebruikt zelf als afkorting TMDb en niet TMDB.-->
+    <summary lang="pl">Scraper filmowy TMDB</summary>
+    <summary lang="pt">Scraper de filmes TMDb</summary>
+    <summary lang="ro">Scraper de filme TMDb</summary>
+    <summary lang="ru">Обработчик Фильмов для TMDB</summary>
+    <summary lang="zh">TMDB电影刮削器</summary>
+    <description lang="en">themoviedb.org is a free and open movie database. It's completely user driven by people like you. TMDb is currently used by millions of people every month and with their powerful API, it is also used by many popular media centers like XBMC to retrieve Movie Metadata, Posters and Fanart to enrich the user's experience.</description>
+    <description lang="de">TheMovieDB.org ist eine freie und offene Film-Datenbank. Sie wird nur User wie dir betrieben. TheMovieDB wird zur Zeit monatlich von Millionen genutzt. Mit der mächtigen API wird sie auch von vielen Media-Center, wie z.B. XBMC, genutzt um Filme-Meta-Daten, Poster und Fanrts zu beziehen, damit der User sein Media-Center verschönern kann</description>
+    <description lang="es">themovieDB.org es una base de datos de películas gratuita y abierta. Es una página web que se basa en contenido subido por los usuarios. TMDb es usada diariamente por mucha gente gracias a su API, que es usada por más programas aparte de XBMC para descargar información de películas así como Posters o Fanart (Fondos de escritorio basados en películas usados en distintos skins) para enriquecer la experiencia de usar XBMC.</description>
+    <description lang="hu">A themoviedb.org egy ingyenes és nyílt filmadatbázis. Teljes egészében olyan felhasználók töltik fel, mint például Te. A TMDb-t havonta emberek milliói használják és a hatékony API-n keresztül számos népszerű média center is, mint például az XBMC a filmadatok, poszterek, fanartképek letöltésére.</description>
+    <description lang="nl">Themoviedb.org is een vrije en open filmdatabank. Gebruikers zoals jij vormen de motor van deze site. Op dit moment gebruiken elke maand miljoenen mensen TMDb. De krachtige API van de site laat mediacenters zoals XBMC toe om metadata, posters en fanart op te halen en zo de gebruikerservaring te verrijken.</description>
+    <description lang="pl">themoviedb.org jest wolną i otwartą filmową bazą danych. Jest zarządzana całkowicie przez osoby takie jak Ty. Obecnie odwiedzają ją miliony osób miesięcznie, a dzięki dostępności API jest używana w wielu media center, takich jak XBMC, do pobierania informacji o filmach, plakatów i fanartów.</description>
+    <description lang="pt">O themoviedb.org é uma base de dados de filmes livre e aberta. É completamente actualizado por pessoas como você e usado por milhões todos os meses. Com o poderoso motor de busca disponível, também se tornou no favorito de muitos softwares média center, como o popular XBMC, para obter informação, posters e fanart que enriquecem a experiência do utilizador.</description>
+    <description lang="ro">themoviedb.org este o bază de date de filme gratuită și deschisă. Este actualizată de oameni ca și tine. TMDb este curent folosită de milioane de oameni în fiecare lună și datorită API-ului puternic, este de asemena folosită de multe centre media populare ca XBMC pentru a obține informații despre filme, afișe și imagini produse de fani (Fanart) care îmbogățesc experiența utilizatorului.</description>
+    <description lang="ru">themoviedb.org это бесплатная и открытая база данных фильмов. Она полностью поддерживается такими же людьми как и ты. В данный момент TMDb используется миллионами людей каждый месяц, и, с его мощным API, используется различными популярными медиа-центрами, такими как XBMC, для получения к Фильмам мета-данных, постеров и фанарта в целях улучшения пользовательского опыта.</description>
+    <description lang="zh">themoviedb.org是一个开放和自由的电影数据库。它完全由象你一样的用户来掌控。TMDb每月为上百万用户提供服务，并通过强大的API界面为许多流行的媒体中心系统如XBMC提供电影资料、封面海报和同人画以丰富用户的体验。</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.muzunga.tv" name="Muzunga.TV" version="1.0.3" provider-name="Muzunga.TV">
+  <requires><import addon="xbmc.python" version="1.0"/></requires>
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py"><provides>video</provides></extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Фильмы, сериалы и телевидение в HD качестве онлайн</summary>
+    <description>Ресурс Muzunga.TV является общедоступным для всех зарегистрированных пользователей и осуществляет свою деятельность с соблюдением действующего законодательства Украины и на основании договора и лицензии на право вещания ДП "УААСП" КТ-3554 от 01.02.2011, обеспечивающим выплаты вознаграждений по авторским и смежным правам.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="script.recentlyadded"
+       name="Recently Added XBMC Script"
+       version="2.0.5"
+       provider-name="alex">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension point="xbmc.python.library"
+             library="RecentlyAdded.py" />
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en"></summary>
+    <description lang="en"></description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="metadata.tvdb.com"
+       name="The TVDB"
+       version="1.2.3"
+       provider-name="Team XBMC">
+  <requires>
+    <import addon="xbmc.metadata" version="1.0"/>
+  </requires>
+  <extension point="xbmc.metadata.scraper.tvshows"
+             language="multi"
+             library="tvdb.xml"
+             cachepersistence="00:15"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Fetch TV show metadata from TheTVDB.com</summary>
+    <summary lang="de">Scraper für Fernsehserien von TheTVDB.com</summary>
+    <summary lang="es">Descarga información de Series de TV desde TVDB.com</summary>
+    <summary lang="fr">Scraper TheTVDB.com pour les séries TV</summary>
+    <summary lang="hu">TV műsor információk a TheTVDB.com-ról</summary>
+    <summary lang="nl">Seriemetadata ophalen van TheTVDB.com</summary>
+    <summary lang="pl">Pobieraj dane o serialach TV z TheTVDB.com</summary>
+    <summary lang="pt">Scraper de séries de TV TVDB.com</summary>
+    <summary lang="ru">Загрузка информации о ТВ-шоу с TheTVDB.com</summary>
+    <summary lang="zh">从TheTVDB.com获取电视剧集信息</summary>
+    <description lang="en">TheTVDB.com is a TV Scraper. The site is a massive open database that can be modified by anybody and contains full meta data for many shows in different languages. All content and images on the site have been contributed by their users for users and have a high standard or quality. The database schema and website are open source under the GPL.</description>
+    <description lang="de">TheTVDB.com ist ein Scraper für TV-Serien. Die Seite hat eine riesige offene Datenbank, welche von jedem geändert werden kann. Sie enthält weitreichende Meta-Daten für viele TV-Serien in verschiedenen Sprachen. Alle Inhalte und Bilder dieser Seite stammen von User für User und haben eine hohe Qualität. Das Datenbankschema und die Webseite sind OpenSource unter dem GPL-Recht</description>
+    <description lang="es">TheTVDB.com es un scraper para series de televisión. Esta pagina web es una base de datos immensa que puede ser modificada por cualquiera y contiene informaciós de series y capítulos en distintos idiomas. Todo el contenido y las imágenes de este sitio han sido creadas y enviadas por sus usuarios bajo unas estrictas normas de tamaño y calidad. El esquema de la base de datos y la página web són consultables y de código abierto bajo licencia GPL.</description>
+    <description lang="fr">TheTVDB.com est un scraper TV. Le site est une immense base de données libre qui peut être modifiée par n'importe qui et qui contient toutes les infos pour beaucoup de séries en différentes langues. Toutes les infos et images du site proviennent de contributions d'utilisateurs pour les utilisateurs et sont d'excellente qualité. Le schéma de la base de données et le site Web sont en open source sous licence GPL.</description>
+    <description lang="hu">A TheTVDB.com egy TV műsor leolvasó. Az oldal egy hatalmas adatbázis amit bárki szabadon módosíthat és rengeteg TV műsor adatait tartalmazza különböző nyelveken. A minőségi tartalom és képanyag ezen az oldalon felhasználóktól származik más felhasználók számára. Az adatbázisstruktúra és a weblap nyílt forráskódú a GPL licenc alatt.</description>
+    <description lang="nl">TheTVDB.com is een seriescraper. De site is een gigantische open databank die iedereen kan aanpassen en uitbreiden, en biedt metadata aan voor TV-series in verschillende talen. Alle inhoud en afbeeldingen zijn afkomstig van gebruikers en moeten een grondige kwaliteitscontrole doorstaan. Het databankschema en de websitecode zijn vrijgegeven onder de open source GPL-licentie.</description>
+    <description lang="pl">TheTVDB.com jest scraperem TV. Ten serwis jest ogromną, wielojęzykową i otwartą bazą danych o serialach, którą może edytować każdy. Zawartość tego serwisu została dostarczona przez użytkowników, dla użytkowników. Dostępne materiały mają wysoki standard lub jakość.</description>
+    <description lang="pt"> O TheTVDB.com é um motor de busca para séries de TV. O site é uma gigantesca base de dados aberta que pode ser alterada por qualquer pessoa e contém informação em várias línguas. Todos os conteúdos do site foram enviados por utilizadores com um elevado padrão de qualidade. A base de dados e site funcionam sob uma licença GPL de software livre.</description>
+    <description lang="ru">TheTVDB.com это обработчик для ТВ-шоу. Сайт представляет собой массивную открытую базу данных, которая может быть изменене кем угодно и содержит полные мета-данные для многих шоу и сериалов на различных языках. Все содержанимое и изображения на сайте были выложены его пользователями для пользователей, и имеют высокий уровень или качество. Схемы базы данных и веб-сайт выполнены под открытым исходным кодом и доступны по лицензии GPL.</description>
+    <description lang="zh">TheTVDB.com是一个电视刮削器。该网站是一个巨大的开放式数据库，任何人都可以修改，包含多语言的许多电视剧集资料。网站设定了高品质标准，所有图片和内容都由用户提供。数据库结构和网站均在GPL许可下开源。</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="metadata.kinopoisk.ru"
+       name="KinoPoisk"
+       version="1.0.33">
+  <requires>
+    <import addon="xbmc.metadata" version="1.0"/>
+    <import addon="metadata.common.themoviedb.org" version="1.0.3"/>
+  </requires>
+  <extension point="xbmc.metadata.scraper.movies"
+             language="ru"
+             library="kinopoisk.xml"/>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <minversion>20000</minversion>
+    <summary lang="en">KinoPoisk Movie Scraper</summary>
+    <summary lang="hu">KinoPoisk Film scraper</summary>
+    <summary lang="kr">KinoPoisk 영화 스크래퍼</summary>
+    <summary lang="pl">Scraper filmów KinoPoisk</summary>
+    <summary lang="pt">Scraper de filmes KinoPoisk</summary>
+    <summary lang="ru">Инфо-ресурс для фильмов с КиноПоиска</summary>
+    <description lang="en">Download Movie information from www.kinopoisk.ru[CR][CR][B]ATTENTION:[/B][CR]For porper working you must set value of[CR]System->Appearance->International->Character set[CR]to Cyrillic (Windows)</description>
+    <description lang="hu">Film információk letöltése a www.kinopoisk.ru webhelyről</description>
+    <description lang="kr">www.kinopoisk.ru 에서 영화 정보 다운로드</description>
+    <description lang="pl">Pobieraj informacje o filmach z www.kinopoisk.ru</description>
+    <description lang="pt">Descarregar informação de filmes de www.kinopoisk.ru</description>
+    <description lang="ru">Скачивает информацию о фильмах с сайта www.kinopoisk.ru[CR][CR][B]ВНИМАНИЕ:[/B][CR]Для нормальной работы дополнения значение параметра[CR]Система->Внешний вид->Международные->Кодировка[CR]должно быть Cyrillic (Windows)</description>
+  </extension>
+</addon>
+
+<addon id="script.randomitems" name="Random Items script" version="1.0.11" provider-name="Hitcher">
+	<requires>
+		<import addon="xbmc.python" version="1.0"/>
+	</requires>
+	<extension point="xbmc.python.library" library="RandomItems.py" />
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en">Random Items script</summary>
+		<description lang="en">Script to get Random Videos and Music from the database.</description>
+		<platform>all</platform>
+	</extension>
+</addon>
+
+<addon id="plugin.video.ex.ua.viewer" name="Ex.Ua Viewer" version="1.0.4" provider-name="vadim.skorba@gmail.com">
+	<requires>
+		<import addon="xbmc.python" version="1.0"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.repository" name="Ex.Ua Viewer Repository">
+		<info compressed="false">http://repo.ex-ua-viewer.googlecode.com/hg/addons.xml</info>
+		<checksum>http://repo.ex-ua-viewer.googlecode.com/hg/addons.xml.md5</checksum>
+		<datadir zip="false">http://repo.ex-ua-viewer.googlecode.com/hg/</datadir>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>Смотрите видео с сайта http://ex.ua/</summary>
+		<description>Смотрите видео с сайта http://ex.ua/</description>
+		<platform>all</platform>
+		<disclaimer>GNU GPLv3 http://www.gnu.org/licenses/</disclaimer>
+	</extension>
+</addon>
+
+<addon id="script.qlock"
+       name="Qlock"
+       version="0.1.2"
+       provider-name="Amet">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension point="xbmc.python.library"
+             library="default.py" />
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Qlock script</summary>
+    <description lang="en">Script to display current time in words, needs skin support. so far only Transparency! is supporting this in SVN</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="skin.aeon.nox"
+  version="1.3.0"
+  name="Aeon Nox"
+  provider-name="Big_Noid">
+  <requires>
+    <import addon="xbmc.gui" version="2.11"/>
+    <import addon="script.recentlyadded" version="1.0.4"/>
+    <import addon="script.favourites" version="1.0.3"/>
+    <import addon="script.logo-downloader" version="2.1.3"/>
+    <import addon="script.randomitems" version="1.0.2"/>
+    <import addon="script.tv.show.next.aired" version="2.1.2"/>
+  </requires>
+  <extension
+    point="xbmc.gui.skin"
+    defaultresolution="720p"
+    defaultresolutionwide="720p"
+    defaultthemename="textures.xbt"
+    effectslowdown="0.75"
+    debugging="false"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Aeon Nox by Big_Noid</summary>
+    <summary lang="nl">Aeon Nox door Big_Noid</summary>
+    <summary lang="fr">Aeon Nox par Big_Noid</summary>
+    <description lang="fr">Aeon Nox utilise presque toutes les vues du skin d'origine Aeon, ces mods et les textures du thème Black. Confluence de Jezz_X est la base de ce skin. Tout le mérite aux responsables de ces skins et mods</description>
+    <description lang="en">Aeon Nox uses almost all views from the original Aeon skin and it's mods and textures from the theme Black. The Confluence skin by Jezz_X was the base for this skin. All credit to the makers of these skins and mods</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="script.logo-downloader"
+       name="Logo Downloader"
+       version="2.3.0"
+       provider-name="ppic">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension point="xbmc.python.library"
+             library="default.py" />
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <minversion>30369</minversion>
+    <summary lang="en">Download Logos / posters / banners / cleararts /showthumbs for your favorites Tvshows</summary>
+    <summary lang="fr">téléchargez les Logos / posters / banners / cleararts /showthumbs de vos séries préférées</summary>
+    <description lang="en">Download logos from www.lockstockmods.net
+    cleararts and showthumbs from www.xbmcstuff.com
+    Banners and posters from www.tvdb.com</description>
+    <description lang="fr">Téléchargez les logos depuis www.lockstockmods.net
+    les cleararts et les showthumbs depuis www.xbmcstuff.com
+    les Banners et les posters depuis www.tvdb.com</description>
+    <disclaimer lang="en">Please contribute on www.xbmcstuff.com www.tvdb.com www.lockstockmods.net</disclaimer>
+    <disclaimer lang="fr">Contribuez sur www.xbmcstuff.com www.tvdb.com www.lockstockmods.net</disclaimer>
+  </extension>
+</addon>
+
+<addon id="script.module.beautifulsoup"
+       name="BeautifulSoup"
+       version="3.0.8"
+       provider-name="Leonard Richardson (leonardr@segfault.org)">
+  <requires>
+    <import addon="xbmc.python"
+    		version="1.0"/>
+  </requires>
+  <extension point="xbmc.python.module"
+             library="lib" />
+  <extension point="xbmc.addon.metadata">
+    <summary>HTML/XML parser for quick-turnaround applications like screen-scraping</summary>
+    <description>Beautiful Soup parses arbitrarily invalid SGML and provides a variety of methods and Pythonic idioms for iterating and searching the parse tree.</description>
+    <license>BSD</license>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.fs.ua"
+       name="Fs.ua"
+       version="1.3"
+       provider-name="x86demon">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+    <import addon="script.module.beautifulsoup"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+             provides="audio, video"
+             library="default.py">
+    <provides>audio video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>
+РАБОТАЕТ ТОЛЬКО В УКРАИНЕ!!!
+
+На этом портале вы можете найти и, что самое главное бесплатно скачать последний новинки кино, музыкальные файлы, любимые видеоклипы и сериалы.
+    </summary>
+    <description>
+РАБОТАЕТ ТОЛЬКО В УКРАИНЕ!!!
+
+На этом портале вы можете найти и, что самое главное бесплатно скачать последний новинки кино, музыкальные файлы, любимые видеоклипы и сериалы.
+    </description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="metadata.common.imdb.com"
+       name="IMDB common scraper functions"
+       version="2.1.1"
+       provider-name="Team XBMC">
+  <requires>
+    <import addon="xbmc.metadata" version="1.0"/>
+  </requires>
+  <extension point="xbmc.metadata.scraper.library"
+             library="imdb.xml"/>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <minversion>20000</minversion>
+    <summary lang="en">IMDB Scraper Library</summary>
+    <summary lang="hu">IMDB leolvasó-könyvtár</summary>
+    <summary lang="kr">IMDB 스크래퍼 라이브러리</summary>
+    <summary lang="nl">IMDB Scraper Bibliotheek</summary>
+    <summary lang="pl">Scraper IMDb</summary>
+    <summary lang="pt">Scraper de filmes IMDb</summary>
+    <summary lang="se">IMDB Skrapbibliotek</summary>
+    <description lang="en">Download Movie information from www.imdb.com</description>
+    <description lang="hu">Film információk letöltése a www.imdb.com webhelyről</description>
+    <description lang="kr">www.imdb.com 에서 영화 정보 다운로드</description>
+    <description lang="nl">Download film informatie van www.imdb.com</description>
+    <description lang="pl">Pobieraj informacje o filmach z www.imdb.com</description>
+    <description lang="pt">Descarregar informação de filmes de www.imdb.com</description>
+    <description lang="se">Ladda ner filminformation från www.imdb.com</description>
+  </extension>
+</addon>
+
+<addon id="script.favourites"
+       name="Favourites script"
+       version="1.0.6"
+       provider-name="CF2009">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension point="xbmc.python.library"
+             library="default.py" />
+  <extension point="xbmc.addon.metadata">
+    <summary>Favourites script</summary>
+    <description>Fetches item from your xbmc favourites to populate Home menu/submenu with custom buttons.</description>
+    <disclaimer>Needs skin support for it to be used properly</disclaimer>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.ex.ua.viewer" name="Ex.Ua Viewer" version="1.0.4" provider-name="vadim.skorba@gmail.com">
+	<requires>
+		<import addon="xbmc.python" version="1.0"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.repository" name="Ex.Ua Viewer Repository">
+		<info compressed="false">http://ex-ua-viewer.googlecode.com/files/addons.xml</info>
+		<datadir zip="false">http://ex-ua-viewer.googlecode.com/hg/</datadir>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>Смотрите видео с сайта http://ex.ua/</summary>
+		<description>Смотрите видео с сайта http://ex.ua/</description>
+		<platform>all</platform>
+		<disclaimer>GNU GPLv3 http://www.gnu.org/licenses/</disclaimer>
+	</extension>
+</addon>
+
+<addon id="plugin.video.youtube"
+       name="YouTube"
+       version="2.0.5"
+       provider-name="TheCollective">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+	<import addon="script.module.beautifulsoup" version="3.0.8"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary>YouTube video plugin</summary>
+    <description>Plugin that let's you browse and play videos from everybody's favorite video site!</description>
+    <disclaimer>Some parts of this addon may not be legal in your country of residence - please check with your local laws before installing.</disclaimer>
+  </extension>
+</addon>
+
+<addon id="metadata.common.themoviedb.org"
+       name="The MovieDB common scraper functions"
+       version="1.1.0"
+       provider-name="Team XBMC">
+  <requires>
+    <import addon="xbmc.metadata" version="1.0"/>
+  </requires>
+  <extension point="xbmc.metadata.scraper.library"
+             library="tmdb.xml"/>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <minversion>20000</minversion>
+    <summary lang="en">TMDb Scraper Library</summary>
+    <summary lang="es">Scraper de peliculas de TMDb</summary>
+    <summary lang="fr">Scraper TMDb</summary>
+    <summary lang="hu">TMDb leolvasó-könyvtár</summary>
+    <summary lang="nl">TMDb-scraperfuncties</summary> 			<!--Dit gaat over de functies, niet over de mediabibliotheek!-->
+    <summary lang="pl">Scraper biblioteki TMDb</summary>
+    <summary lang="pt">Scraper de filmes TMDb</summary>
+    <summary lang="ro">Bibliotecă catalog TMDb</summary>
+    <summary lang="ru">Обработчик для TMDb</summary>
+    <summary lang="se">Skrapebibliotek för TMDb</summary>
+    <summary lang="zh">TMDb刮削器代码库</summary>
+    <description lang="en">Download thumbs and fanarts from www.themoviedb.org</description>
+    <description lang="es">Descarga posters y fanart de www.themoviedb.org</description>
+    <description lang="fr">Télécharge vignettes et backdrops depuis www.themoviedb.org</description>
+    <description lang="hu">Bélyeg- és fanartképek letöltése a www.themoviedb.org webhelyről</description>
+    <description lang="nl">Miniaturen en fanart ophalen van www.themoviedb.org</description>
+    <description lang="pl">Pobieraj ikony i fanarty z www.themoviedb.org</description>
+    <description lang="pt">Descarregar informação de filmes de www.themoviedb.org</description>
+    <description lang="ro">Descărcați miniaturi și imagini realizate de fani de pe www.themoviedb.org</description>
+    <description lang="ru">Загружать миниатюры и фанарт с www.themoviedb.org</description>
+    <description lang="se">Ladda ner miniatyrer och fanart från www.themoviedb.org</description>
+    <description lang="zh">从www.themoviedb.org下载海报和同人画</description>
+  </extension>
+</addon>
 </addons>
