@@ -1,4 +1,7 @@
-﻿[B]Version 1.0.5[/B]
+﻿[B]Version 1.0.6[/B]
+- Fixed bug with playlist
+
+[B]Version 1.0.5[/B]
 - Implemented autoupdate
 - Added deploy script
 

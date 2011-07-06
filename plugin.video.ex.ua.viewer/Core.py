@@ -151,7 +151,11 @@ class Core:
 		xbmc.executebuiltin("Action(Stop)")
 		resultPlaylist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 		resultPlaylist.clear()
-		image = re.compile("<img src='(.+?\.jpg)\?800'.+?>").search(content).group(1) + '?200'
+		image = re.compile("<img.*?src='(.+?\.jpg)\?800'.+?>").search(content)
+		if image:
+			image = image.group(1) + '?200'
+		else:
+			image = self.ROOT + '/icons/video.png'
 		for episode in playlist:
 			episodeName = re.compile("<a href='(/get/" + episode + ")' .*?>(.*?)</a>").search(content)
 			if episodeName:
