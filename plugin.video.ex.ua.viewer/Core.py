@@ -15,6 +15,9 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	
+	
+	
 '''
 
 import Localization
@@ -151,11 +154,7 @@ class Core:
 		xbmc.executebuiltin("Action(Stop)")
 		resultPlaylist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 		resultPlaylist.clear()
-		image = re.compile("<img src='(.+?\.jpg)\?800'.+?>").search(content)
-		if image:
-			image = image.group(1) + '?200'
-		else:
-			image = None
+		image = re.compile("<img src='(.+?\.jpg)\?800'.+?>").search(content).group(1) + '?200'
 		for episode in playlist:
 			episodeName = re.compile("<a href='(/get/" + episode + ")' .*?>(.*?)</a>").search(content)
 			if episodeName:
