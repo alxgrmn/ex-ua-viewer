@@ -408,8 +408,11 @@ class Core:
 			return
 
 	def lockView(self, viewId):
-		if self.__settings__.getSetting("lock_view"):				
-			xbmc.executebuiltin("Container.SetViewMode(%s)" % str(self.skinOptimizations[int(self.__settings__.getSetting("skin_optimization"))][viewId]))
+		if self.__settings__.getSetting("lock_view"):
+			try:
+				xbmc.executebuiltin("Container.SetViewMode(%s)" % str(self.skinOptimizations[int(self.__settings__.getSetting("skin_optimization"))][viewId]))
+			except:
+				return
 
 	def getParameters(self, parameterString):
 		commands = {}

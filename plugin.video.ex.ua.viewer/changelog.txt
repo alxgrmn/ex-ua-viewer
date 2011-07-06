@@ -1,5 +1,9 @@
-﻿[B]Version 1.0.8[/B]
+﻿[B]Version 1.0.8.1[/B]
+- Small bugfix for error catching
+
+[B]Version 1.0.8[/B]
 - Implemented skin optimization for "Confluence" by default
+  !!!NEED SETTINGS RECONFIGURATION!!!
 
 [B]Version 1.0.7[/B]
 - Added checksum for proper autoupdates
