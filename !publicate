@@ -9,6 +9,7 @@ while read LINE; do
 done 
 } < plugin.video.ex.ua.viewer/addon.xml
 echo "</addons>" >> addons.xml
+md5sum addons.xml | cut -f1 -d' ' > addons.xml.checksum
 hg add *
-hg commit
+hg commit -u vadim.skorba@gmail.com
 hg push -f https://vadim.skorba@ex-ua-viewer.googlecode.com/hg/
