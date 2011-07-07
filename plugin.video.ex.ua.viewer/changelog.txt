@@ -1,4 +1,7 @@
-﻿[B]Version 1.0.8.1[/B]
+﻿[B]Version 1.0.8.2[/B]
+- Small XML bugfix
+
+[B]Version 1.0.8.1[/B]
 - Small bugfix for error catching
 
 [B]Version 1.0.8[/B]
