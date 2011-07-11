@@ -67,6 +67,8 @@ class Core:
 			'icons': 53,
 		}
 	)
+	
+	# Private and system methods
 	def __init__(self, localization):
 		self.localization = localization
 
@@ -76,10 +78,103 @@ class Core:
 		except:
 			return text
 
+	def createPlaylist(self, playlist, content, flv = True):
+		xbmc.executebuiltin("Action(Stop)")
+		resultPlaylist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+		resultPlaylist.clear()
+		image = re.compile("<img.*?src='(.+?\.jpg)\?800'.+?>").search(content)
+		if image:
+			image = image.group(1) + '?200'
+		else:
+			image = self.ROOT + '/icons/video.png'
+		for episode in playlist:
+			episodeName = re.compile("<a href='(/get/" + episode + ")' .*?>(.*?)</a>").search(content)
+			if episodeName:
+				listitem = xbmcgui.ListItem(self.unescape(self.stripHtml(episodeName.group(2))), iconImage=image, thumbnailImage=image)
+				if flv:
+					episodeName = re.compile("\"url\": \"http://www.ex.ua(/show/%s/[abcdef0-9]+.flv)\"" % episode).search(content)
+				resultPlaylist.add(self.URL + episodeName.group(1), listitem)
+		if 1 == resultPlaylist.size():
+			player = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+			player.play(resultPlaylist)
+		else:
+			xbmc.executebuiltin("Action(Playlist)")
+
+	def drawPaging(self, videos, action):
+		next = re.compile("<td><a href='([\w\d\?=&/_]+)'><img src='/t2/arr_r.gif'").search(videos)
+		pages = re.compile("<font color=#808080><b>(\d+\.\.\d+)</b>").search(videos)
+		if next:
+			self.drawItem('[%s] ' % pages.group(1) + self.localize('Next >>'), action, self.URL + next.group(1), self.ROOT + '/icons/next.png')
+
+	def drawItem(self, title, action, link = '', image=None, isFolder = True, contextMenu=None):
+		listitem = xbmcgui.ListItem(title, iconImage=image, thumbnailImage=image)
+		url = '%s?action=%s&url=%s' % (sys.argv[0], action, urllib.quote_plus(link))
+		if contextMenu:
+			listitem.addContextMenuItems(contextMenu)
+		if isFolder:
+			listitem.setProperty("Folder", "true")
+		else:
+			listitem.setInfo(type = 'Video', infoLabels = {"Title":title})
+		xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=isFolder)
+
+	def fetchData(self, url):
+		request = urllib2.Request(url)
+		request.add_header('User-Agent', self.USERAGENT)
+		if self.__settings__.getSetting("auth"):
+			authString = '; ' + self.__settings__.getSetting("auth")
+		else:
+			authString = ''
+		request.add_header('Cookie', 'uper=' + str(self.ROWCOUNT) + authString)
+		try:
+			connection = urllib2.urlopen(request)
+			result = connection.read()
+			connection.close()
+			return (result)
+		except urllib2.HTTPError, e:
+			print self.__plugin__ + " fetchData(" + url + ") exception: " + str(e)
+			return
+
+	def lockView(self, viewId):
+		if self.__settings__.getSetting("lock_view"):
+			try:
+				xbmc.executebuiltin("Container.SetViewMode(%s)" % str(self.skinOptimizations[int(self.__settings__.getSetting("skin_optimization"))][viewId]))
+			except:
+				return
+
+	def getParameters(self, parameterString):
+		commands = {}
+		splitCommands = parameterString[parameterString.find('?')+1:].split('&')
+		for command in splitCommands: 
+			if (len(command) > 0):
+				splitCommand = command.split('=')
+				name = splitCommand[0]
+				value = splitCommand[1]
+				commands[name] = value
+		return commands
+
+	def unescape(self, string):
+		for (symbol, code) in self.htmlCodes:
+			string = re.sub(code, symbol, string)
+		return string
+
+	def stripHtml(self, string):
+		for (html, replacement) in self.stripPairs:
+			string = re.sub(html, replacement, string)
+		return string
+		
+	# Executable actions methods
+	def executeAction(self, params = {}):
+		get = params.get
+		if hasattr(self, get("action")):
+			getattr(self, get("action"))(params)
+		else:
+			self.sectionMenu()
+
 	def sectionMenu(self):
 		sections = self.fetchData("%s/%s/video" % (self.URL, self.LANGUAGE))
 		for (link, sectionName, count) in re.compile("<a href='(/view/.+?)'><b>(.+?)</b></a><p><a href='/view/.+?' class=info>.+?: (\d+)</a>").findall(sections):
 			self.drawItem(sectionName + ' (' + count + ')', 'openSection', self.URL + link)
+		self.drawItem(self.localize('< Search Everywhere >'), 'searchAll', image=self.ROOT + '/icons/search.png')
 		self.drawItem(self.localize('< Search User Page >'), 'searchUser', image=self.ROOT + '/icons/search_user.png')
 		if self.__settings__.getSetting("auth"):
 			self.drawItem(self.localize('< User Bookmarks >'), 'openSearch', self.URL + '/buffer', self.ROOT + '/icons/bookmarks.png')
@@ -148,6 +243,16 @@ class Core:
 		self.lockView('info')
 		xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
 
+	def searchAll(self, params = {}):
+		keyboard = xbmc.Keyboard("", self.localize("Input Search Phrase:"))
+		keyboard.doModal()
+		query = keyboard.getText()
+		if not query:
+			return
+		elif keyboard.isConfirmed():
+			params["url"] = urllib.quote_plus(self.URL + '/search?s=' + query)
+			self.openSearch(params)
+
 	def searchUser(self, params = {}):
 		keyboard = xbmc.Keyboard("", self.localize("Input Search Username:"))
 		keyboard.doModal()
@@ -157,113 +262,6 @@ class Core:
 		elif keyboard.isConfirmed():
 			params["url"] = self.URL + '/user/' + query
 			self.openSearch(params)
-
-	def createPlaylist(self, playlist, content, flv = True):
-		xbmc.executebuiltin("Action(Stop)")
-		resultPlaylist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
-		resultPlaylist.clear()
-		image = re.compile("<img.*?src='(.+?\.jpg)\?800'.+?>").search(content)
-		if image:
-			image = image.group(1) + '?200'
-		else:
-			image = self.ROOT + '/icons/video.png'
-		for episode in playlist:
-			episodeName = re.compile("<a href='(/get/" + episode + ")' .*?>(.*?)</a>").search(content)
-			if episodeName:
-				listitem = xbmcgui.ListItem(self.unescape(self.stripHtml(episodeName.group(2))), iconImage=image, thumbnailImage=image)
-				if flv:
-					episodeName = re.compile("\"url\": \"http://www.ex.ua(/show/%s/[abcdef0-9]+.flv)\"" % episode).search(content)
-				resultPlaylist.add(self.URL + episodeName.group(1), listitem)
-		if 1 == resultPlaylist.size():
-			player = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
-			player.play(resultPlaylist)
-		else:
-			xbmc.executebuiltin("Action(Playlist)")
-
-	def playM3U(self):
-		content = self.__settings__.getSetting("lastContent")
-		if content:
-			m3uPlaylistUrl = re.compile(".*<a href='(.*?).m3u' rel='nofollow'><b>.*</b></a>").search(content)
-			if m3uPlaylistUrl:
-				m3uPlaylist = re.compile(".*/get/(\d+).*").findall(self.fetchData(self.URL + m3uPlaylistUrl.group(1) + '.m3u'))
-				if m3uPlaylist:
-					self.createPlaylist(m3uPlaylist, content, False)
-
-	def playFLV(self):
-		content = self.__settings__.getSetting("lastContent")
-		if content:
-			flvPlaylist = re.compile("\"url\": \"http://www.ex.ua/show/(\d+)/[abcdef0-9]+.flv\"").findall(content)
-			if flvPlaylist:
-				self.createPlaylist(flvPlaylist, content)
-
-	def showDetails(self, params = {}):
-		xbmc.executebuiltin("Action(Info)")
-		if '1' == self.__settings__.getSetting("skin_optimization"):#Transperency
-			xbmc.executebuiltin("ActivateWindow(1113)")
-			xbmc.executebuiltin("Action(Right)")
-		if '0' == self.__settings__.getSetting("skin_optimization"):#Confluence
-			xbmc.executebuiltin("Action(Up)")
-
-	def openPage(self, params = {}):
-		get = params.get
-		content = self.fetchData(urllib.unquote_plus(get("url")))
-		self.__settings__.setSetting("lastContent", content)
-		filelist = re.compile("<a href='/filelist/(\d+).urls' rel='nofollow'>").search(content)
-		details = re.compile(">(.+?)?<h1>(.+?)</h1>(.+?)</td>", re.DOTALL).search(content)
-		if details and filelist:
-			if re.compile("\"url\": \"http://www.ex.ua/show/\d+/[abcdef0-9]+.flv\"").search(content):
-				self.drawItem(self.localize('FLV Playlist'), 'playFLV', '', self.ROOT + '/icons/flash.png', False)
-			if re.compile(".*<a href='.*?.m3u' rel='nofollow'><b>.*</b></a>").search(content):
-				self.drawItem(self.localize('M3U Playlist'), 'playM3U', '', self.ROOT + '/icons/video.png', False)
-			image = re.compile("<img src='(http.+?\?800)'").search(details.group(1))
-			if image:
-				image = image.group(1)
-			else:
-				image = ''
-			title = details.group(2)
-			description = "-----------------------------------------------------------------------------------------\n"
-			description += self.localize('\n[B]:::Description:::[/B]\n')
-			description += details.group(3).replace('смотреть онлайн', '')
-			comments = re.compile("<a href='(/view_comments/\d+).+?(\d+)</a>").search(content)
-			if comments:
-				description += self.localize('[B]:::Comments:::[/B]\n\n')
-				commentsContent = self.fetchData(self.URL + comments.group(1))
-				for (commentTitle, comment) in re.compile("<a href='/view_comments/\d+'><b>(.+?)</b>.+?<p>(.+?)<p>", re.DOTALL).findall(commentsContent):
-					description += "[B]%s[/B]%s" % (commentTitle, comment)
-				listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [%s]' % comments.group(2), iconImage=self.ROOT + '/icons/description.png')
-			else:
-				listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [0]', iconImage=self.ROOT + '/icons/description.png')
-			description += "-----------------------------------------------------------------------------------------\n\n\n\n\n\n\n"
-			listitem.setInfo(type = 'Video', infoLabels = {
-				"Title": 		self.unescape(self.stripHtml(title)),
-				"Plot": 		self.unescape(self.stripHtml(description)) } )
-			url = '%s?action=%s' % (sys.argv[0], 'showDetails')
-			xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=True)
-			if self.__settings__.getSetting("auth"):
-				self.drawItem(self.localize('Leave\nComment'), 'leaveComment', filelist.group(1), self.ROOT + '/icons/comment.png', False)
-			self.lockView('icons')
-			xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
-		else:
-			url = '%s?action=%s&url=%s&contentReady=True' % (sys.argv[0], 'openSection', get("url"))
-			xbmc.executebuiltin("Container.Update(%s)" % url)
-
-	def drawPaging(self, videos, action):
-		next = re.compile("<td><a href='([\w\d\?=&/_]+)'><img src='/t2/arr_r.gif'").search(videos)
-		pages = re.compile("<font color=#808080><b>(\d+\.\.\d+)</b>").search(videos)
-		if next:
-			self.drawItem('[%s] ' % pages.group(1) + self.localize('Next >>'), action, self.URL + next.group(1), self.ROOT + '/icons/next.png')
-
-	def drawItem(self, title, action, link = '', image=None, isFolder = True, contextMenu=None):
-		listitem = xbmcgui.ListItem(title, iconImage=image, thumbnailImage=image)
-		url = '%s?action=%s&url=%s' % (sys.argv[0], action, urllib.quote_plus(link))
-		if contextMenu:
-			listitem.addContextMenuItems(contextMenu)
-		if isFolder:
-			listitem.setProperty("Folder", "true")
-		else:
-			listitem.setInfo(type = 'Video', infoLabels = {"Title":title})
-		xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=isFolder)
-
 	
 	def leaveComment(self, params = {}):
 		get = params.get
@@ -299,7 +297,7 @@ class Core:
 		else:
 			return
 
-	def loginUser(self):
+	def loginUser(self, params = {}):
 		if self.__settings__.getSetting("auth"):
 			xbmc.executebuiltin("Notification(%s, %s, 2500)" % (self.localize('Auth'), self.localize('Already logged in')))
 			return
@@ -356,7 +354,7 @@ class Core:
 			print self.__plugin__ + " loginUser() exception: " + str(e)
 		xbmc.executebuiltin("Container.Refresh()")
 
-	def logoutUser(self):
+	def logoutUser(self, params = {}):
 		if not self.__settings__.getSetting("auth"):
 			xbmc.executebuiltin("Notification(%s, %s, 2500)" % (self.localize('Auth'), self.localize('User not logged in')))
 			return
@@ -365,72 +363,93 @@ class Core:
 		xbmc.executebuiltin("Notification(%s, %s, 2500)" % (self.localize('Auth'), self.localize('User successfully logged out')))
 		xbmc.executebuiltin("Container.Refresh()")
 
-	def executeAction(self, params = {}):
+	def playM3U(self, params = {}):
+		content = self.__settings__.getSetting("lastContent")
+		if content:
+			m3uPlaylistUrl = re.compile(".*<a href='(.*?).m3u' rel='nofollow'><b>.*</b></a>").search(content)
+			if m3uPlaylistUrl:
+				m3uPlaylist = re.compile(".*/get/(\d+).*").findall(self.fetchData(self.URL + m3uPlaylistUrl.group(1) + '.m3u'))
+				if m3uPlaylist:
+					self.createPlaylist(m3uPlaylist, content, False)
+
+	def playFLV(self, params = {}):
+		content = self.__settings__.getSetting("lastContent")
+		if content:
+			flvPlaylist = re.compile("\"url\": \"http://www.ex.ua/show/(\d+)/[abcdef0-9]+.flv\"").findall(content)
+			if flvPlaylist:
+				self.createPlaylist(flvPlaylist, content)
+
+	def showDetails(self, params = {}):
+		xbmc.executebuiltin("Action(Info)")
+		if '1' == self.__settings__.getSetting("skin_optimization"):#Transperency
+			xbmc.executebuiltin("ActivateWindow(1113)")
+			xbmc.executebuiltin("Action(Right)")
+		if '0' == self.__settings__.getSetting("skin_optimization"):#Confluence
+			xbmc.executebuiltin("Action(Up)")
+
+	def openPage(self, params = {}):
 		get = params.get
-		if (get("action") == "openSection"):
-			self.openSection(params)
-		elif (get("action") == "openPage"):
-			self.openPage(params)
-		elif (get("action") == "openSearch"):
-			self.openSearch(params)
-		elif (get("action") == "searchUser"):
-			self.searchUser(params)
-		elif (get("action") == "playM3U"):
-			self.playM3U()
-		elif (get("action") == "playFLV"):
-			self.playFLV()
-		elif (get("action") == "showDetails"):
-			self.showDetails(params)
-		elif (get("action") == "loginUser"):
-			self.loginUser()
-		elif (get("action") == "logoutUser"):
-			self.logoutUser()
-		elif (get("action") == "leaveComment"):
-			self.leaveComment(params)
+		content = self.fetchData(urllib.unquote_plus(get("url")))
+		self.__settings__.setSetting("lastContent", content)
+		filelist = re.compile("<a href='/filelist/(\d+).urls' rel='nofollow'>").search(content)
+		details = re.compile(">(.+?)?<h1>(.+?)</h1>(.+?)</td>", re.DOTALL).search(content)
+		if details and filelist:
+			if re.compile("\"url\": \"http://www.ex.ua/show/\d+/[abcdef0-9]+.flv\"").search(content):
+				self.drawItem(self.localize('FLV Playlist'), 'playFLV', '', self.ROOT + '/icons/flash.png', False)
+			if re.compile(".*<a href='.*?.m3u' rel='nofollow'><b>.*</b></a>").search(content):
+				self.drawItem(self.localize('M3U Playlist'), 'playM3U', '', self.ROOT + '/icons/video.png', False)
+			image = re.compile("<img src='(http.+?\?800)'").search(details.group(1))
+			if image:
+				image = image.group(1)
+			else:
+				image = ''
+			title = details.group(2)
+			description = "-----------------------------------------------------------------------------------------\n"
+			description += self.localize('\n[B]:::Description:::[/B]\n')
+			description += details.group(3).replace('смотреть онлайн', '')
+			comments = re.compile("<a href='(/view_comments/\d+).+?(\d+)</a>").search(content)
+			if comments:
+				description += self.localize('[B]:::Comments:::[/B]\n\n')
+				commentsContent = self.fetchData(self.URL + comments.group(1))
+				for (commentTitle, comment) in re.compile("<a href='/view_comments/\d+'><b>(.+?)</b>.+?<p>(.+?)<p>", re.DOTALL).findall(commentsContent):
+					description += "[B]%s[/B]%s" % (commentTitle, comment)
+				listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [%s]' % comments.group(2), iconImage=self.ROOT + '/icons/description.png')
+			else:
+				listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [0]', iconImage=self.ROOT + '/icons/description.png')
+			description += "-----------------------------------------------------------------------------------------\n\n\n\n\n\n\n"
+			listitem.setInfo(type = 'Video', infoLabels = {
+				"Title": 		self.unescape(self.stripHtml(title)),
+				"Plot": 		self.unescape(self.stripHtml(description)) } )
+			url = '%s?action=%s' % (sys.argv[0], 'showDetails')
+			xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=True)
+			if self.__settings__.getSetting("auth"):
+				self.drawItem(self.localize('Leave\nComment'), 'leaveComment', filelist.group(1), self.ROOT + '/icons/comment.png', False)
+				self.drawItem(self.localize('To My\nPage'), 'toMyPage', filelist.group(1), self.ROOT + '/icons/add_to_user_page.png', False)
+				self.drawItem(self.localize('To My\nBookmarks'), 'toBookmarks', filelist.group(1), self.ROOT + '/icons/add_bookmark.png', False)
+			self.lockView('icons')
+			xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
 		else:
-			self.sectionMenu()
+			url = '%s?action=%s&url=%s&contentReady=True' % (sys.argv[0], 'openSection', get("url"))
+			xbmc.executebuiltin("Container.Update(%s)" % url)
 
-	def fetchData(self, url):
-		request = urllib2.Request(url)
-		request.add_header('User-Agent', self.USERAGENT)
-		if self.__settings__.getSetting("auth"):
-			authString = '; ' + self.__settings__.getSetting("auth")
-		else:
-			authString = ''
-		request.add_header('Cookie', 'uper=' + str(self.ROWCOUNT) + authString)
+	def toMyPage(self, params = {}):
+		get = params.get
+		self.addLink(get("url"), 'page')
+
+	def toBookmarks(self, params = {}):
+		get = params.get
+		self.addLink(get("url"), 'bookmark')
+
+	def addLink(self, id, actionName):
+		actions = {'page': 6, 'bookmark': 4}
 		try:
-			connection = urllib2.urlopen(request)
-			result = connection.read()
-			connection.close()
-			return (result)
-		except urllib2.HTTPError, e:
-			print self.__plugin__ + " fetchData(" + url + ") exception: " + str(e)
-			return
-
-	def lockView(self, viewId):
-		if self.__settings__.getSetting("lock_view"):
-			try:
-				xbmc.executebuiltin("Container.SetViewMode(%s)" % str(self.skinOptimizations[int(self.__settings__.getSetting("skin_optimization"))][viewId]))
-			except:
-				return
-
-	def getParameters(self, parameterString):
-		commands = {}
-		splitCommands = parameterString[parameterString.find('?')+1:].split('&')
-		for command in splitCommands: 
-			if (len(command) > 0):
-				splitCommand = command.split('=')
-				name = splitCommand[0]
-				value = splitCommand[1]
-				commands[name] = value
-		return commands
-
-	def unescape(self, string):
-		for (symbol, code) in self.htmlCodes:
-			string = re.sub(code, symbol, string)
-		return string
-
-	def stripHtml(self, string):
-		for (html, replacement) in self.stripPairs:
-			string = re.sub(html, replacement, string)
-		return string
+			action = actions[actionName]
+		except:
+			action = actions['page']
+		if re.match('\d+', id) and self.__settings__.getSetting("auth"):
+			self.fetchData(self.URL + '/add_link/' + str(id) + '/?link_id=' + str(action))
+			xbmc.executebuiltin("Notification(%s, %s, 2500)" % (self.localize('Item Saving'), self.localize('Item saved successfully')))
+			xbmc.executebuiltin("Container.Refresh()")
+		else:
+			xbmc.executebuiltin("Notification(%s, %s, 2500)" % (self.localize('Item Saving'), self.localize('Item not saved')))
+			xbmc.executebuiltin("Container.Refresh()")
