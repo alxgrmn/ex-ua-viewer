@@ -1,4 +1,8 @@
-﻿[B]Version 1.1.3.1[/B]
+﻿[B]Version 1.1.5[/B]
+- Fixes with bollean settings
+  !!!NEED SETTINGS RECONFIGURATION!!!
+
+[B]Version 1.1.3.1[/B]
 - Small bug fix
 
 [B]Version 1.1.3[/B]

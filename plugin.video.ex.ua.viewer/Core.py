@@ -71,7 +71,7 @@ class Core:
 	# Private and system methods
 	def __init__(self, localization):
 		self.localization = localization
-		if self.__settings__.getSetting("usegate"):
+		if 'true' == self.__settings__.getSetting("usegate"):
 			self.URL = 'http://fex.net'
 
 	def localize(self, text):
@@ -137,7 +137,7 @@ class Core:
 			return
 
 	def lockView(self, viewId):
-		if self.__settings__.getSetting("lock_view"):
+		if 'true' == self.__settings__.getSetting("lock_view"):
 			try:
 				xbmc.executebuiltin("Container.SetViewMode(%s)" % str(self.skinOptimizations[int(self.__settings__.getSetting("skin_optimization"))][viewId]))
 			except:
