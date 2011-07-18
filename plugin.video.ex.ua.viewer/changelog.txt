@@ -1,4 +1,7 @@
-﻿[B]Version 1.1.2[/B]
+﻿[B]Version 1.1.3[/B]
+- Added support for gate http://fex.net as addon option
+
+[B]Version 1.1.2[/B]
 - Added ability for saving item to users page
 - Added ability for saving item to users bookmarks
 - Added search throughout site

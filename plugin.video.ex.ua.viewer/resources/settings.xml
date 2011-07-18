@@ -26,4 +26,10 @@
 		label   = "30004"
 		default = "0"
 	/>
+	<setting
+		id      = "usegate"
+		type    = "bool"
+		label   = "30005"
+		default = "false"
+	/>
 </settings>
