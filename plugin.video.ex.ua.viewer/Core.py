@@ -34,7 +34,7 @@ from htmlentitydefs import name2codepoint
 class Core:
 	__plugin__ = sys.modules[ "__main__"].__plugin__
 	__settings__ = sys.modules[ "__main__" ].__settings__
-	URL = ('http://www.ex.ua', 'http://fex.net')[int(__settings__.getSetting("usegate"))]
+	URL = 'http://www.ex.ua'
 	USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:5.0) Gecko/20100101 Firefox/5.0"
 	ROWCOUNT = (15, 30, 50, 100)[int(__settings__.getSetting("rowcount"))]
 	LANGUAGE = ('ru', 'uk', 'en')[int(__settings__.getSetting("language"))]
@@ -71,6 +71,8 @@ class Core:
 	# Private and system methods
 	def __init__(self, localization):
 		self.localization = localization
+		if self.__settings__.getSetting("usegate"):
+			self.URL = 'http://fex.net'
 
 	def localize(self, text):
 		try:
