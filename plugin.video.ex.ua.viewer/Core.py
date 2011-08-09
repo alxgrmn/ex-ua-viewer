@@ -71,7 +71,6 @@ class Core:
 	
 	# Private and system methods
 	def __init__(self, localization):
-		print self.__settings__
 		self.localization = localization
 		if 'true' == self.__settings__.getSetting("usegate"):
 			self.URL = 'http://fex.net'
