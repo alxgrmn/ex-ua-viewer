@@ -71,6 +71,7 @@ class Core:
 	
 	# Private and system methods
 	def __init__(self, localization):
+		print self.__settings__
 		self.localization = localization
 		if 'true' == self.__settings__.getSetting("usegate"):
 			self.URL = 'http://fex.net'
@@ -101,7 +102,7 @@ class Core:
 			player = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
 			player.play(resultPlaylist)
 		else:
-			xbmc.executebuiltin("Action(Playlist)")
+			xbmc.executebuiltin("ActivateWindow(VideoPlaylist)")
 
 	def drawPaging(self, videos, action):
 		next = re.compile("<td><a href='([\w\d\?=&/_]+)'><img src='/t2/arr_r.gif'").search(videos)

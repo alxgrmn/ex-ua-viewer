@@ -1,4 +1,7 @@
-﻿[B]Version 1.1.6[/B]
+﻿[B]Version 1.1.7[/B]
+- Changed action for opening playlist (Eden compatible)
+
+[B]Version 1.1.6[/B]
 - Added support for 'Artists' section
 
 [B]Version 1.1.5[/B]
