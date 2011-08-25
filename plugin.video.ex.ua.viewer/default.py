@@ -22,7 +22,7 @@ import sys, xbmc, xbmcaddon, os
 __settings__ = xbmcaddon.Addon(id='plugin.video.ex.ua.viewer')
 __version__ = __settings__.getAddonInfo('version')
 __plugin__ = __settings__.getAddonInfo('name') + " v." + __version__
-__root__ = os.getcwd()
+__root__ = __settings__.getAddonInfo('path')
 
 if (__name__ == "__main__" ):
 	print __plugin__

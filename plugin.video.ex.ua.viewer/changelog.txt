@@ -1,4 +1,7 @@
-﻿[B]Version 1.1.7.1[/B]
+﻿[B]Version 1.1.8[/B]
+- Changed root path detection method
+
+[B]Version 1.1.7.1[/B]
 - Removed some debug info
 
 [B]Version 1.1.7[/B]
