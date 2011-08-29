@@ -30,7 +30,6 @@ import cookielib
 import re
 import tempfile
 from htmlentitydefs import name2codepoint
-from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup
 
 class Core:
 	__plugin__ = sys.modules[ "__main__"].__plugin__
@@ -394,16 +393,14 @@ class Core:
 		get = params.get
 		content = self.fetchData(urllib.unquote_plus(get("url")))
 		self.__settings__.setSetting("lastContent", content)
-		beautifulSoup = BeautifulSoup(content)
-		artistMenu = beautifulSoup.find('div', 'pg_menu')
+		artistMenu = re.compile("<div class=\"pg_menu\">.*?<a.+?</a>.*?<a(.+?)>.+?</div>", re.DOTALL).search(content)
 		if artistMenu:
-			anchor = artistMenu.findAll('a')[1]
-			try:
-				anchor["class"]
+			if re.compile("class=\"active\"").search(artistMenu.group(1)):
 				pass
-			except:
-				if anchor["href"]:
-					params['url'] = urllib.quote_plus(self.URL + anchor["href"])
+			else:
+				anchor = re.compile("href=\"(/view/\d+)\"").search(artistMenu.group(1))
+				if anchor.group(1):
+					params['url'] = urllib.quote_plus(self.URL + anchor.group(1))
 					return self.openPage(params)
 
 		filelist = re.compile("<a href='/filelist/(\d+).urls' rel='nofollow'>").search(content)
