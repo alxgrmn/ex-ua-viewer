@@ -1,4 +1,8 @@
-﻿[B]Version 1.2.0[/B]
+﻿[B]Version 1.2.2[/B]
+- Fixed auth through https
+- Fixed logout regexp
+
+[B]Version 1.2.0[/B]
 - Removed BeautifulSoup usage for proper copmatibility
 
 [B]Version 1.1.8[/B]

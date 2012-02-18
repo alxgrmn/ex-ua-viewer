@@ -35,6 +35,7 @@ class Core:
 	__plugin__ = sys.modules[ "__main__"].__plugin__
 	__settings__ = sys.modules[ "__main__" ].__settings__
 	URL = 'http://www.ex.ua'
+	URL_SECURE = 'https://www.ex.ua'
 	USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:5.0) Gecko/20100101 Firefox/5.0"
 	ROWCOUNT = (15, 30, 50, 100)[int(__settings__.getSetting("rowcount"))]
 	LANGUAGE = ('ru', 'uk', 'en')[int(__settings__.getSetting("language"))]
@@ -319,10 +320,10 @@ class Core:
 		if not password:
 			return
 
-		content = self.fetchData(self.URL + '/login')
+		content = self.fetchData(self.URL_SECURE + '/login')
 		captcha = re.compile("<img src='/captcha\?captcha_id=(\d+)'").search(content)
 		if captcha:
-			urllib.URLopener().retrieve(self.URL + '/captcha?captcha_id=' + captcha.group(1), tempfile.gettempdir() + '/captcha.png')
+			urllib.URLopener().retrieve(self.URL_SECURE + '/captcha?captcha_id=' + captcha.group(1), tempfile.gettempdir() + '/captcha.png')
 			window = xbmcgui.Window(xbmcgui.getCurrentWindowId())
 			image = xbmcgui.ControlImage(460, 20, 360, 160, tempfile.gettempdir() + '/captcha.png')
 			window.addControl(image)
@@ -343,8 +344,8 @@ class Core:
 				'login': username, 'password': password, 'flag_permanent': 1,
 				'captcha_value': captchaText, 'captcha_id': captchaId
 			})
-			value = opener.open(self.URL + "/login", data).read()
-			if re.compile("<a href='/logout'>Выход</a>").search(value):
+			value = opener.open(self.URL_SECURE + "/login", data).read()
+			if re.compile("<a href='/logout'>").search(value):
 				xbmc.executebuiltin("Notification(%s, %s, 2500)" % (self.localize('Auth'), self.localize('Login successfull')))
 				for cookie in cookieJar:
 					if cookie.name == 'ukey':
