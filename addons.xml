@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addons>
-<addon id="plugin.video.ex.ua.viewer" name="Ex.Ua Viewer" version="1.2.2" provider-name="vadim.skorba@gmail.com">
+<addon id="plugin.video.ex.ua.viewer" name="Ex.Ua Viewer" version="1.2.3" provider-name="vadim.skorba@gmail.com">
 <requires>
 <import addon="xbmc.python" version="1.0"/>
 </requires>
