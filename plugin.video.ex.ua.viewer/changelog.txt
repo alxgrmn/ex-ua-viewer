@@ -1,4 +1,7 @@
-﻿[B]Version 1.2.2[/B]
+ [B]Version 1.2.3[/B]
+- Fixed regexps according to changes at site
+ 
+[B]Version 1.2.2[/B]
 - Fixed auth through https
 - Fixed logout regexp
 
