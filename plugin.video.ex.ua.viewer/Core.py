@@ -1,4 +1,4 @@
-﻿'''
+ '''
     Ex.Ua.Viewer plugin for XBMC
     Copyright (C) 2011 Vadim Skorba
 	vadim.skorba@gmail.com
@@ -175,7 +175,7 @@ class Core:
 
 	def sectionMenu(self):
 		sections = self.fetchData("%s/%s/video" % (self.URL, self.LANGUAGE))
-		for (link, sectionName, count) in re.compile("<a href='(/view/.+?)'><b>(.+?)</b></a><p><a href='/view/.+?' class=info>.+?: (\d+)</a>").findall(sections):
+		for (link, sectionName, count) in re.compile("<a href='(.+?)'><b>(.+?)</b></a><p><a href='.+?' class=info>.+?: (\d+)</a>").findall(sections):
 			self.drawItem(sectionName + ' (' + count + ')', 'openSection', self.URL + link)
 		self.drawItem(self.localize('< Search Everywhere >'), 'searchAll', image=self.ROOT + '/icons/search.png')
 		self.drawItem(self.localize('< Search User Page >'), 'searchUser', image=self.ROOT + '/icons/search_user.png')
@@ -190,7 +190,7 @@ class Core:
 	def openSection(self, params = {}):
 		get = params.get
 		url = urllib.unquote_plus(get("url"))
-		self.drawItem(self.localize('< Search >'), 'openSearch', re.search("/view/(\d+)", url).group(1), self.ROOT + '/icons/search.png')
+		self.drawItem(self.localize('< Search >'), 'openSearch', re.search("(\d+)$", url).group(1), self.ROOT + '/icons/search.png')
 		if 'True' == get("contentReady"):
 			videos = self.__settings__.getSetting("lastContent")
 			if 0 == len(re.compile(">(.+?)?<a href='([\w\d\?=&/_,]+)'><b>(.+?)</b>.+?</small><p>(.*?)&nbsp;").findall(videos)):
@@ -208,7 +208,7 @@ class Core:
 			contextMenu = [
 				(
 					self.localize('Search Like That'),
-					'XBMC.Container.Update(%s)' % ('%s?action=%s&url=%s&like=%s' % (sys.argv[0], 'openSearch', re.search("/view/(\d+)", url).group(1), urllib.quote_plus(self.unescape(title))))
+					'XBMC.Container.Update(%s)' % ('%s?action=%s&url=%s&like=%s' % (sys.argv[0], 'openSearch', re.search("(\d+)$", url).group(1), urllib.quote_plus(self.unescape(title))))
 				)
 			]
 			self.drawItem(self.unescape(title + comments), 'openPage', self.URL + link, image + '?200', contextMenu=contextMenu)
