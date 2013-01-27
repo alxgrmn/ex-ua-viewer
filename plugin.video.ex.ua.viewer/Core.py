@@ -151,7 +151,9 @@ class Core:
 			if (len(command) > 0):
 				splitCommand = command.split('=')
 				name = splitCommand[0]
-				value = splitCommand[1]
+        value = ''
+				if len(splitCommand) == 2:
+					value = splitCommand[1]
 				commands[name] = value
 		return commands
 
