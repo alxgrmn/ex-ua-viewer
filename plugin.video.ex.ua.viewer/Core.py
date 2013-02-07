@@ -234,7 +234,7 @@ class Core:
 		else:
 			url = urllib.unquote_plus(get("url"))
 		videos = self.fetchData(url)
-		for (image, link, title, comments) in re.compile(">(.+?)?<a href='(/view[\w\d\?=&/_,]+)'><b>(.+?)</b>(.+?)</td>", re.DOTALL).findall(videos):
+		for (image, link, title, comments) in re.compile(">(.+?)?</a><a href='(/view[\w\d\?=&/_,]+)'><b>(.+?)</b>(.+?)</td>", re.DOTALL).findall(videos):
 			image = re.compile("<img src='(.+?)\?\d+'.+?></a>").search(image)
 			if image:
 				image = image.group(1)
