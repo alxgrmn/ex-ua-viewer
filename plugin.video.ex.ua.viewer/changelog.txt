@@ -1,5 +1,5 @@
-﻿[B]Version 1.3.3[/B]
-- Autoupdate test revision
+﻿[B]Version 1.3.4[/B]
+- Autoupdate test revisions
 
 [B]Version 1.3.2[/B]
 - Autoupdate fixed
