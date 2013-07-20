@@ -1,4 +1,4 @@
- '''
+﻿'''
     Ex.Ua.Viewer plugin for XBMC
     Copyright (C) 2011 Vadim Skorba
 	vadim.skorba@gmail.com
@@ -19,7 +19,6 @@
 
 import Localization
 import sys
-import os
 import xbmc
 import xbmcaddon
 import xbmcgui
@@ -29,7 +28,6 @@ import urllib2
 import cookielib
 import re
 import tempfile
-from htmlentitydefs import name2codepoint
 
 class Core:
 	__plugin__ = sys.modules[ "__main__"].__plugin__
@@ -104,12 +102,12 @@ class Core:
 			xbmc.executebuiltin("ActivateWindow(VideoPlaylist)")
 
 	def drawPaging(self, videos, action):
-		next = re.compile("<td><a href='([\w\d\?=&/_]+)'><img src='/t2/arr_r.gif'").search(videos)
+		nextButton = re.compile("<td><a href='([\w\d\?=&/_]+)'><img src='/t3/arr_r.gif'").search(videos)
 		pages = re.compile("<font color=#808080><b>(\d+\.\.\d+)</b>").search(videos)
-		if next:
-			self.drawItem('[%s] ' % pages.group(1) + self.localize('Next >>'), action, self.URL + next.group(1), self.ROOT + '/icons/next.png')
+		if nextButton:
+			self.drawItem('[%s] ' % pages.group(1) + self.localize('Next >>'), action, self.URL + nextButton.group(1), self.ROOT + '/icons/next.png')
 
-	def drawItem(self, title, action, link = '', image=None, isFolder = True, contextMenu=None):
+	def drawItem(self, title, action, link = '', image=ROOT + '/icons/video.png', isFolder = True, contextMenu=None):
 		listitem = xbmcgui.ListItem(title, iconImage=image, thumbnailImage=image)
 		url = '%s?action=%s&url=%s' % (sys.argv[0], action, urllib.quote_plus(link))
 		if contextMenu:
@@ -151,7 +149,7 @@ class Core:
 			if (len(command) > 0):
 				splitCommand = command.split('=')
 				name = splitCommand[0]
-        value = ''
+				value = ''
 				if len(splitCommand) == 2:
 					value = splitCommand[1]
 				commands[name] = value
@@ -178,6 +176,8 @@ class Core:
 	def sectionMenu(self):
 		sections = self.fetchData("%s/%s/video" % (self.URL, self.LANGUAGE))
 		for (link, sectionName, count) in re.compile("<a href='(.+?)'><b>(.+?)</b></a><p><a href='.+?' class=info>.+?: (\d+)</a>").findall(sections):
+			if re.compile("/17031949\?").search(link):
+				continue
 			self.drawItem(sectionName + ' (' + count + ')', 'openSection', self.URL + link)
 		self.drawItem(self.localize('< Search Everywhere >'), 'searchAll', image=self.ROOT + '/icons/search.png')
 		self.drawItem(self.localize('< Search User Page >'), 'searchUser', image=self.ROOT + '/icons/search_user.png')
@@ -192,19 +192,18 @@ class Core:
 	def openSection(self, params = {}):
 		get = params.get
 		url = urllib.unquote_plus(get("url"))
-		self.drawItem(self.localize('< Search >'), 'openSearch', re.search("(\d+)$", url).group(1), self.ROOT + '/icons/search.png')
 		if 'True' == get("contentReady"):
 			videos = self.__settings__.getSetting("lastContent")
-			if 0 == len(re.compile(">(.+?)?<a href='([\w\d\?=&/_,]+)'><b>(.+?)</b>.+?</small><p>(.*?)&nbsp;").findall(videos)):
+			if 0 == len(re.compile(">?<a href='([^><']+?)'><img src='([^><']+?)\?\d+?' .+? alt='(.+?)'></a>.+?</small><p>(.*?)&nbsp;").findall(videos)):
 				videos = self.fetchData(url)
 		else:
 			videos = self.fetchData(url)
-		for (image, link, title, comments) in re.compile(">(.+?)?<a href='(/view[\w\d\?=&/_,]+)'><b>(.+?)</b>.+?</small><p>(.*?)&nbsp;").findall(videos):
-			image = re.compile("<img src='(.+?)\?\d+'.+?></a><p>").search(image)
-			if image:
-				image = image.group(1)
-			else:
-				image = ''
+		originalId = re.search("<input type=hidden name=original_id value='(\d+)'>", videos)
+		if originalId and originalId.group(1):
+			self.drawItem(self.localize('< Search >'), 'openSearch', originalId.group(1), self.ROOT + '/icons/search.png')
+		else:
+			self.drawItem(self.localize('< Search >'), 'openSearch', re.search("(\d+)$", url).group(1), self.ROOT + '/icons/search.png')
+		for (link, image, title, comments) in re.compile(">?<a href='([^><']+?)'><img src='([^><']+?)\?\d+?' .+? alt='(.+?)'></a>.+?</small><p>(.*?)&nbsp;").findall(videos):
 			if comments:
 				comments = " [%s]" % re.sub('.+?>(.+?)</a>', '\g<1>', comments)
 			contextMenu = [
@@ -228,18 +227,13 @@ class Core:
 			keyboard.doModal()
 			query = keyboard.getText()
 			if keyboard.isConfirmed() and query:
-				url = '%s/search?original_id=%s&s=%s' % (self.URL, get("url"), urllib.quote_plus(query))
+				url = '%s/search?original_id=%s&s=%s' % (self.URL, re.search("(\d+)$", get("url")).group(1), urllib.quote_plus(query))
 			else:
 				return
 		else:
 			url = urllib.unquote_plus(get("url"))
 		videos = self.fetchData(url)
-		for (image, link, title, comments) in re.compile(">(.+?)?</a><a href='(/view[\w\d\?=&/_,]+)'><b>(.+?)</b>(.+?)</td>", re.DOTALL).findall(videos):
-			image = re.compile("<img src='(.+?)\?\d+'.+?></a>").search(image)
-			if image:
-				image = image.group(1)
-			else:
-				image = ''
+		for (link, image, title, comments) in re.compile(">?<a href='([^><']+?)'><img src='([^><']+?)\?\d+?' .+? alt='(.+?)'></a>.+?</small>.*?>(.+?)</td>", re.DOTALL).findall(videos):
 			comments = re.search("<a href='/view_comments.+?>(.+?)</a>", comments)
 			if comments:
 				title = "%s [%s]" % (title, comments.group(1))
@@ -297,7 +291,7 @@ class Core:
 					else:
 						xbmc.executebuiltin("Notification(%s, %s, 2500)" % (self.localize('Commenting'), self.localize('Message not sent')))
 				except urllib2.HTTPError, e:
-					print self.__plugin__ + " fetchData(" + url + ") exception: " + str(e)
+					print self.__plugin__ + " leaveComment() exception: " + str(e)
 					return
 		else:
 			return
@@ -417,7 +411,7 @@ class Core:
 			if image:
 				image = image.group(1)
 			else:
-				image = ''
+				image = self.ROOT + '/icons/video.png'
 			title = details.group(2)
 			description = "-----------------------------------------------------------------------------------------\n"
 			description += self.localize('\n[B]:::Description:::[/B]\n')
@@ -455,14 +449,14 @@ class Core:
 		get = params.get
 		self.addLink(get("url"), 'bookmark')
 
-	def addLink(self, id, actionName):
+	def addLink(self, pageId, actionName):
 		actions = {'page': 6, 'bookmark': 4}
 		try:
 			action = actions[actionName]
 		except:
 			action = actions['page']
-		if re.match('\d+', id) and self.__settings__.getSetting("auth"):
-			self.fetchData(self.URL + '/add_link/' + str(id) + '/?link_id=' + str(action))
+		if re.match('\d+', pageId) and self.__settings__.getSetting("auth"):
+			self.fetchData(self.URL + '/add_link/' + str(pageId) + '/?link_id=' + str(action))
 			xbmc.executebuiltin("Notification(%s, %s, 2500)" % (self.localize('Item Saving'), self.localize('Item saved successfully')))
 			xbmc.executebuiltin("Container.Refresh()")
 		else:

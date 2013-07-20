@@ -1,22 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.ex.ua.viewer" name="Ex.Ua Viewer" version="1.2.3" provider-name="vadim.skorba@gmail.com">
-<requires>
-<import addon="xbmc.python" version="1.0"/>
-</requires>
-<extension point="xbmc.python.pluginsource" provides="video" library="default.py">
-<provides>video</provides>
-</extension>
-<extension point="xbmc.addon.repository" name="Ex.Ua Viewer Repository">
-<info compressed="false">http://ex-ua-viewer.googlecode.com/hg/addons.xml</info>
-<checksum>http://ex-ua-viewer.googlecode.com/hg/addons.xml.checksum</checksum>
-<datadir zip="false">http://ex-ua-viewer.googlecode.com/hg/</datadir>
-</extension>
-<extension point="xbmc.addon.metadata">
-<summary>Смотрите видео с сайта http://ex.ua/</summary>
-<description>Смотрите видео с сайта http://ex.ua/</description>
-<platform>all</platform>
-<disclaimer>GNU GPLv3 http://www.gnu.org/licenses/</disclaimer>
-</extension>
+<addon id="plugin.video.ex.ua.viewer" name="Ex.Ua Viewer" version="1.3.0" provider-name="vadim.skorba@gmail.com">
+	<requires>
+		<import addon="xbmc.python" version="1.0"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.repository" name="Ex.Ua Viewer Repository">
+		<info compressed="false">http://ex-ua-viewer.googlecode.com/hg/addons.xml</info>
+		<checksum>http://ex-ua-viewer.googlecode.com/hg/addons.xml.checksum</checksum>
+		<datadir zip="false">http://ex-ua-viewer.googlecode.com/hg/</datadir>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>Смотрите видео с сайта http://ex.ua/</summary>
+		<description>Смотрите видео с сайта http://ex.ua/</description>
+		<platform>all</platform>
+		<disclaimer>GNU GPLv3 http://www.gnu.org/licenses/</disclaimer>
+	</extension>
 </addon>
 </addons>
