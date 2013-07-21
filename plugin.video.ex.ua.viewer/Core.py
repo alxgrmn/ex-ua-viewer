@@ -213,7 +213,7 @@ class Core:
 		if 'True' == get("contentReady"):
 			videos = self.__settings__.getSetting("lastContent")
 			soup = BeautifulSoup(videos)
-			if 0 == len(soup.find('table', {'class': 'include_0'}).findAll('td', {'align': 'center', 'valign': 'center'})):
+			if 0 == len(soup.findAll('td', {'align': 'center', 'valign': 'center'})):
 				videos = self.fetchData(url)
 		else:
 			videos = self.fetchData(url)
@@ -225,8 +225,12 @@ class Core:
 		soup = BeautifulSoup(videos)
 		for video in soup.find('table', {'class': 'include_0'}).findAll('td', {'align': 'center', 'valign': 'center'}):
 			link = video.p.a.get('href')
-			image = video.a.img.get('src')
-			title = video.p.a.b.string.encode('utf8')
+			if video.a.img:
+				image = video.a.img.get('src')
+				title = video.findAll('a')[1].b.string.encode('utf8')
+			else:
+				image = self.ROOT + '/icons/video.png'
+				title = video.findAll('a')[0].b.string.encode('utf8')
 			if video.find('a', {'class': 'info'}):
 				title = "%s [%s]" % (title, video.find('a', {'class': 'info'}).string.encode('utf8'))
 			contextMenu = [
