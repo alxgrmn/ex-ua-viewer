@@ -1,4 +1,7 @@
-﻿[B]Version 1.4.0[/B]
+﻿[B]Version 1.4.1[/B]
+- Fixed search and bookmarks
+
+[B]Version 1.4.0[/B]
 - Beautiful soup used
 - Added uaproxy support
 

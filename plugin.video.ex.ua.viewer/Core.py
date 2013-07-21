@@ -194,7 +194,7 @@ class Core:
 			sectionName = section.b.string.encode('utf8')
 			count = re.sub('^.+?(\d+)$', '\g<1>', section.p.a.string.encode('utf8'))
 			# Remove megogo category
-			if re.compile("/17031949\?").search(link):
+			if re.compile("/17031949\?").search(link) or re.compile("%2F17031949%3F").search(link):
 				continue
 			self.drawItem(sectionName + ' (' + count + ')', 'openSection', link)
 		self.drawItem(self.localize('< Search Everywhere >'), 'searchAll', image=self.ROOT + '/icons/search.png')
@@ -258,14 +258,17 @@ class Core:
 		videos = self.fetchData(url)
 		soup = BeautifulSoup(videos)
 		for video in soup.find('table', {'class': 'panel'}).findAll('td'):
-			if not video.contents[1].b:
-				continue
-			link = video.a.get('href')
-			image = video.a.img.get('src')
-			title = video.contents[1].b.string.encode('utf8')
-			if video.find('a', {'class': 'info'}):
-				title = "%s [%s]" % (title, video.find('a', {'class': 'info'}).string.encode('utf8'))
-			self.drawItem(self.unescape(title), 'openPage', link, image)
+			if video.a and (video.a.img or video.a.b):
+				link = video.a.get('href')
+				if video.a.img:
+					image = video.a.img.get('src')
+					title = video.findAll('a')[1].b.string.encode('utf8')
+				else:
+					image = self.ROOT + '/icons/video.png'
+					title = video.findAll('a')[0].b.string.encode('utf8')
+				if video.find('a', {'class': 'info'}):
+					title = "%s [%s]" % (title, video.find('a', {'class': 'info'}).string.encode('utf8'))
+				self.drawItem(self.unescape(title), 'openPage', link, image)
 		self.drawPaging(videos, 'openSearch')
 		self.lockView('info')
 		xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
@@ -429,7 +432,9 @@ class Core:
 					params['url'] = urllib.quote_plus(anchor.group(1))
 					return self.openPage(params)
 
-		filelist = re.compile("(\d+).urls").search(soup.find('td', {'colspan': 3, 'valign': 'bottom'}).a.get('href'))
+		filelist = None
+		if soup.find('td', {'colspan': 3, 'valign': 'bottom'}):
+			filelist = re.compile("(\d+).urls").search(soup.find('td', {'colspan': 3, 'valign': 'bottom'}).a.get('href'))
 		details = re.compile(">(.+?)?<h1>(.+?)</h1>(.+?)</td>", re.DOTALL).search(content)
 		if details and filelist:
 			if re.compile("\"url\": \"http://www.ex.ua/show/\d+/[abcdef0-9]+.flv\"").search(content):
