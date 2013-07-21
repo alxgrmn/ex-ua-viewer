@@ -17,7 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import sys, xbmc, xbmcaddon, os
+import sys, xbmcaddon, os
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.ex.ua.viewer')
 __version__ = __settings__.getAddonInfo('version')
@@ -25,12 +25,6 @@ __plugin__ = __settings__.getAddonInfo('name') + " v." + __version__
 __root__ = __settings__.getAddonInfo('path')
 
 if (__name__ == "__main__" ):
-	#print __plugin__
-	import Core
-	import Localization	
-	core = Core.Core(Localization.__localization__)
-	if (not sys.argv[2]):
-		core.sectionMenu()
-	else:
-		params = core.getParameters(sys.argv[2])
-		core.executeAction(params)
+	sys.path.append(os.path.join(__root__, r'resources', r'lib'))
+	from Router import Router
+	Router(sys.argv[2])

@@ -17,7 +17,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import Localization
 import sys
 import xbmc
 import xbmcaddon
@@ -29,6 +28,9 @@ import cookielib
 import re
 import os
 import tempfile
+import Localization
+from Parser import Parser
+from Gui import Gui
 from BeautifulSoup import BeautifulSoup
 
 class Core:
@@ -40,38 +42,9 @@ class Core:
 	ROWCOUNT = (15, 30, 50, 100)[int(__settings__.getSetting("rowcount"))]
 	LANGUAGE = ('ru', 'uk', 'en')[int(__settings__.getSetting("language"))]
 	ROOT = sys.modules[ "__main__"].__root__
-	localization = ()
-	htmlCodes = (
-		('&', '&amp;'),
-		('<', '&lt;'),
-		('>', '&gt;'),
-		('"', '&quot;'),
-		("'", '&#39;'),
-	)
-	stripPairs = (
-		('<p>', '\n'),
-		('<li>', '\n'),
-		('<br>', '\n'),
-		('<.+?>', ' '),
-		('</.+?>', ' '),
-		('&nbsp;', ' '),
-	)
-	skinOptimizations = (
-		{#Confluence
-			'list': 50,
-			'info': 50,
-			'icons': 500,
-		},
-		{#Transperency!
-			'list': 50,
-			'info': 51,
-			'icons': 53,
-		}
-	)
-	
+
 	# Private and system methods
-	def __init__(self, localization):
-		self.localization = localization
+	def __init__(self):
 		if 'true' == self.__settings__.getSetting("usegate"):
 			self.URL = 'http://fex.net'
 		if 'true' == self.__settings__.getSetting("useproxy"):
@@ -79,7 +52,7 @@ class Core:
 
 	def localize(self, text):
 		try:
-			return self.localization[self.LANGUAGE][text]
+			return Localization.__localization__[self.LANGUAGE][text]
 		except:
 			return text
 
@@ -91,11 +64,11 @@ class Core:
 		if image:
 			image = image.group(1) + '?200'
 		else:
-			image = self.ROOT + '/icons/video.png'
+			image = self.ROOT + '/resources/media/icons/video.png'
 		for episode in playlist:
 			episodeName = re.compile("([^'\" ]+get(?:%2F|/)" + episode + ").*?>(.*?)</a>").search(content)
 			if episodeName:
-				listitem = xbmcgui.ListItem(self.unescape(self.stripHtml(episodeName.group(2))), iconImage=image, thumbnailImage=image)
+				listitem = xbmcgui.ListItem(Parser().unescape(Parser().stripHtml(episodeName.group(2))), iconImage=image, thumbnailImage=image)
 				if flv:
 					episodeName = re.compile("\"url\": \"http://www.ex.ua(/show/%s/[abcdef0-9]+.flv)\"" % episode).search(content)
 				resultPlaylist.add(self.formUrl(episodeName.group(1)), listitem)
@@ -104,23 +77,6 @@ class Core:
 			player.play(resultPlaylist)
 		else:
 			xbmc.executebuiltin("ActivateWindow(VideoPlaylist)")
-
-	def drawPaging(self, videos, action):
-		nextButton = re.compile("<td><a href='([\w\d\?=&/_]+)'><img src='/t3/arr_r.gif'").search(videos)
-		pages = re.compile("<font color=#808080><b>(\d+\.\.\d+)</b>").search(videos)
-		if nextButton:
-			self.drawItem('[%s] ' % pages.group(1) + self.localize('Next >>'), action, self.URL + nextButton.group(1), self.ROOT + '/icons/next.png')
-
-	def drawItem(self, title, action, link = '', image=ROOT + '/icons/video.png', isFolder = True, contextMenu=None):
-		listitem = xbmcgui.ListItem(title, iconImage=image, thumbnailImage=image)
-		url = '%s?action=%s&url=%s' % (sys.argv[0], action, urllib.quote_plus(link))
-		if contextMenu:
-			listitem.addContextMenuItems(contextMenu)
-		if isFolder:
-			listitem.setProperty("Folder", "true")
-		else:
-			listitem.setInfo(type = 'Video', infoLabels = {"Title":title})
-		xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=isFolder)
 
 	def formUrl(self, url):
 		if re.search("^/", url):
@@ -148,101 +104,42 @@ class Core:
 			print self.__plugin__ + " fetchData(" + url + ") exception: " + str(e)
 			return
 
-	def lockView(self, viewId):
-		if 'true' == self.__settings__.getSetting("lock_view"):
-			try:
-				xbmc.executebuiltin("Container.SetViewMode(%s)" % str(self.skinOptimizations[int(self.__settings__.getSetting("skin_optimization"))][viewId]))
-			except:
-				return
-
-	def getParameters(self, parameterString):
-		commands = {}
-		splitCommands = parameterString[parameterString.find('?')+1:].split('&')
-		for command in splitCommands: 
-			if (len(command) > 0):
-				splitCommand = command.split('=')
-				name = splitCommand[0]
-				value = ''
-				if len(splitCommand) == 2:
-					value = splitCommand[1]
-				commands[name] = value
-		return commands
-
-	def unescape(self, string):
-		for (symbol, code) in self.htmlCodes:
-			string = re.sub(code, symbol, string)
-		return string
-
-	def stripHtml(self, string):
-		for (html, replacement) in self.stripPairs:
-			string = re.sub(html, replacement, string)
-		return string
-		
 	# Executable actions methods
-	def executeAction(self, params = {}):
-		get = params.get
-		if hasattr(self, get("action")):
-			getattr(self, get("action"))(params)
-		else:
-			self.sectionMenu()
-
 	def sectionMenu(self):
-		sections = self.fetchData("/%s/video" % (self.LANGUAGE))
-		soup = BeautifulSoup(sections)
-		for section in soup.find('table', {'class': 'include_0'}).findAll('td', {'align': 'center', 'valign': 'center'}):
-			link = section.a.get('href')
-			sectionName = section.b.string.encode('utf8')
-			count = re.sub('^.+?(\d+)$', '\g<1>', section.p.a.string.encode('utf8'))
-			# Remove megogo category
-			if re.compile("/17031949\?").search(link) or re.compile("%2F17031949%3F").search(link):
-				continue
-			self.drawItem(sectionName + ' (' + count + ')', 'openSection', link)
-		self.drawItem(self.localize('< Search Everywhere >'), 'searchAll', image=self.ROOT + '/icons/search.png')
-		self.drawItem(self.localize('< Search User Page >'), 'searchUser', image=self.ROOT + '/icons/search_user.png')
+		for section in Parser().sections(self.fetchData("/%s/video" % (self.LANGUAGE))):
+			Gui().drawItem(section['title'], 'openSection', section['link'], section['image'])
+		Gui().drawItem(self.localize('< Search Everywhere >'), 'searchAll', image=self.ROOT + '/resources/media/icons/search.png')
+		Gui().drawItem(self.localize('< Search User Page >'), 'searchUser', image=self.ROOT + '/resources/media/icons/search_user.png')
 		if self.__settings__.getSetting("auth"):
-			self.drawItem(self.localize('< User Bookmarks >'), 'openSearch', '/buffer', self.ROOT + '/icons/bookmarks.png')
-			self.drawItem(self.localize('< User Logout >'), 'logoutUser', image=self.ROOT + '/icons/logout.png')
+			Gui().drawItem(self.localize('< User Bookmarks >'), 'openSearch', '/buffer', self.ROOT + '/resources/media/icons/bookmarks.png')
+			Gui().drawItem(self.localize('< User Logout >'), 'logoutUser', image=self.ROOT + '/resources/media/icons/logout.png')
 		else:
-			self.drawItem(self.localize('< User Login >'), 'loginUser', image=self.ROOT + '/icons/login.png')
-		self.lockView('list')
-		xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
+			Gui().drawItem(self.localize('< User Login >'), 'loginUser', image=self.ROOT + '/resources/media/icons/login.png')
+		Gui().lockView('list')
 
 	def openSection(self, params = {}):
 		get = params.get
 		url = urllib.unquote_plus(get("url"))
 		if 'True' == get("contentReady"):
 			videos = self.__settings__.getSetting("lastContent")
-			soup = BeautifulSoup(videos)
-			if 0 == len(soup.findAll('td', {'align': 'center', 'valign': 'center'})):
+			if 0 == len(Parser().sections(videos)):
 				videos = self.fetchData(url)
 		else:
 			videos = self.fetchData(url)
-		originalId = re.search("<input type=hidden name=original_id value='(\d+)'>", videos)
-		if originalId and originalId.group(1):
-			self.drawItem(self.localize('< Search >'), 'openSearch', originalId.group(1), self.ROOT + '/icons/search.png')
+		originalId = Parser().originalId(videos)
+		if originalId:
+			Gui().drawItem(self.localize('< Search >'), 'openSearch', originalId, self.ROOT + '/resources/media/icons/search.png')
 		else:
-			self.drawItem(self.localize('< Search >'), 'openSearch', re.search("(\d+)$", url).group(1), self.ROOT + '/icons/search.png')
-		soup = BeautifulSoup(videos)
-		for video in soup.find('table', {'class': 'include_0'}).findAll('td', {'align': 'center', 'valign': 'center'}):
-			link = video.p.a.get('href')
-			if video.a.img:
-				image = video.a.img.get('src')
-				title = video.findAll('a')[1].b.string.encode('utf8')
-			else:
-				image = self.ROOT + '/icons/video.png'
-				title = video.findAll('a')[0].b.string.encode('utf8')
-			if video.find('a', {'class': 'info'}):
-				title = "%s [%s]" % (title, video.find('a', {'class': 'info'}).string.encode('utf8'))
-			contextMenu = [
-				(
-					self.localize('Search Like That'),
-					'XBMC.Container.Update(%s)' % ('%s?action=%s&url=%s&like=%s' % (sys.argv[0], 'openSearch', re.search("(\d+)$", url).group(1), urllib.quote_plus(self.unescape(title))))
-				)
-			]
-			self.drawItem(self.unescape(title), 'openPage', link, image, contextMenu=contextMenu)
-		self.drawPaging(videos, 'openSection')
-		self.lockView('info')
-		xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
+			Gui().drawItem(self.localize('< Search >'), 'openSearch', re.search("(\d+)$", url).group(1), self.ROOT + '/resources/media/icons/search.png')
+
+		for section in Parser().sections(videos):
+			contextMenu = [(
+				self.localize('Search Like That'),
+				'XBMC.Container.Update(%s)' % ('%s?action=%s&url=%s&like=%s' % (sys.argv[0], 'openSearch', re.search("(\d+)$", url).group(1), urllib.quote_plus(section['title'])))
+			)]
+			Gui().drawItem(section['title'], 'openPage', section['link'], section['image'], contextMenu=contextMenu)
+		Gui().drawPaging(videos, 'openSection')
+		Gui().lockView('info')
 
 	def openSearch(self, params = {}):
 		get = params.get
@@ -260,22 +157,10 @@ class Core:
 		else:
 			url = urllib.unquote_plus(get("url"))
 		videos = self.fetchData(url)
-		soup = BeautifulSoup(videos)
-		for video in soup.find('table', {'class': 'panel'}).findAll('td'):
-			if video.a and (video.a.img or video.a.b):
-				link = video.a.get('href')
-				if video.a.img:
-					image = video.a.img.get('src')
-					title = video.findAll('a')[1].b.string.encode('utf8')
-				else:
-					image = self.ROOT + '/icons/video.png'
-					title = video.findAll('a')[0].b.string.encode('utf8')
-				if video.find('a', {'class': 'info'}):
-					title = "%s [%s]" % (title, video.find('a', {'class': 'info'}).string.encode('utf8'))
-				self.drawItem(self.unescape(title), 'openPage', link, image)
-		self.drawPaging(videos, 'openSearch')
-		self.lockView('info')
-		xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
+		for section in Parser().search(videos):
+			Gui().drawItem(section['title'], 'openPage', section['link'], section['image'])
+		Gui().drawPaging(videos, 'openSearch')
+		Gui().lockView('info')
 
 	def searchAll(self, params = {}):
 		keyboard = xbmc.Keyboard("", self.localize("Input Search Phrase:"))
@@ -442,14 +327,14 @@ class Core:
 		details = re.compile(">(.+?)?<h1>(.+?)</h1>(.+?)</td>", re.DOTALL).search(content)
 		if details and filelist:
 			if re.compile("\"url\": \"http://www.ex.ua/show/\d+/[abcdef0-9]+.flv\"").search(content):
-				self.drawItem(self.localize('FLV Playlist'), 'playFLV', '', self.ROOT + '/icons/flash.png', False)
+				Gui().drawItem(self.localize('FLV Playlist'), 'playFLV', '', self.ROOT + '/resources/media/icons/flash.png', False)
 			if re.compile("[^'\" ].m3u").search(content):
-				self.drawItem(self.localize('M3U Playlist'), 'playM3U', '', self.ROOT + '/icons/video.png', False)
+				Gui().drawItem(self.localize('M3U Playlist'), 'playM3U', '', self.ROOT + '/resources/media/icons/video.png', False)
 			image = re.compile("<img src='(http.+?\?800)'").search(details.group(1))
 			if image:
 				image = image.group(1)
 			else:
-				image = self.ROOT + '/icons/video.png'
+				image = self.ROOT + '/resources/media/icons/video.png'
 			title = details.group(2)
 			description = "-----------------------------------------------------------------------------------------\n"
 			description += self.localize('\n[B]:::Description:::[/B]\n')
@@ -460,21 +345,20 @@ class Core:
 				commentsContent = self.fetchData(comments.group(1))
 				for (commentTitle, comment) in re.compile("<a href='/view_comments/\d+'><b>(.+?)</b>.+?<p>(.+?)<p>", re.DOTALL).findall(commentsContent):
 					description += "[B]%s[/B]%s" % (commentTitle, comment)
-				listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [%s]' % comments.group(2), iconImage=self.ROOT + '/icons/description.png')
+				listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [%s]' % comments.group(2), iconImage=self.ROOT + '/resources/media/icons/description.png')
 			else:
-				listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [0]', iconImage=self.ROOT + '/icons/description.png')
+				listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [0]', iconImage=self.ROOT + '/resources/media/icons/description.png')
 			description += "-----------------------------------------------------------------------------------------\n\n\n\n\n\n\n"
 			listitem.setInfo(type = 'Video', infoLabels = {
-				"Title": 		self.unescape(self.stripHtml(title)),
-				"Plot": 		self.unescape(self.stripHtml(description)) } )
+				"Title": 		Parser().unescape(Parser().stripHtml(title)),
+				"Plot": 		Parser().unescape(Parser().stripHtml(description)) } )
 			url = '%s?action=%s' % (sys.argv[0], 'showDetails')
 			xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=True)
 			if self.__settings__.getSetting("auth"):
-				self.drawItem(self.localize('Leave\nComment'), 'leaveComment', filelist.group(1), self.ROOT + '/icons/comment.png', False)
-				self.drawItem(self.localize('To My\nPage'), 'toMyPage', filelist.group(1), self.ROOT + '/icons/add_to_user_page.png', False)
-				self.drawItem(self.localize('To My\nBookmarks'), 'toBookmarks', filelist.group(1), self.ROOT + '/icons/add_bookmark.png', False)
-			self.lockView('icons')
-			xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
+				Gui().drawItem(self.localize('Leave\nComment'), 'leaveComment', filelist.group(1), self.ROOT + '/resources/media/icons/comment.png', False)
+				Gui().drawItem(self.localize('To My\nPage'), 'toMyPage', filelist.group(1), self.ROOT + '/resources/media/icons/add_to_user_page.png', False)
+				Gui().drawItem(self.localize('To My\nBookmarks'), 'toBookmarks', filelist.group(1), self.ROOT + '/resources/media/icons/add_bookmark.png', False)
+			Gui().lockView('icons')
 		else:
 			url = '%s?action=%s&url=%s&contentReady=True' % (sys.argv[0], 'openSection', get("url"))
 			xbmc.executebuiltin("Container.Update(%s)" % url)
