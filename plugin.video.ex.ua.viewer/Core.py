@@ -27,7 +27,9 @@ import urllib
 import urllib2
 import cookielib
 import re
+import os
 import tempfile
+from BeautifulSoup import BeautifulSoup
 
 class Core:
 	__plugin__ = sys.modules[ "__main__"].__plugin__
@@ -72,6 +74,8 @@ class Core:
 		self.localization = localization
 		if 'true' == self.__settings__.getSetting("usegate"):
 			self.URL = 'http://fex.net'
+		if 'true' == self.__settings__.getSetting("useproxy"):
+			self.URL = 'http://uaproxy.com/index.php?hl=2e7&q=http%3A%2F%2Fwww.ex.ua'
 
 	def localize(self, text):
 		try:
@@ -89,12 +93,12 @@ class Core:
 		else:
 			image = self.ROOT + '/icons/video.png'
 		for episode in playlist:
-			episodeName = re.compile("<a href='(/get/" + episode + ")' .*?>(.*?)</a>").search(content)
+			episodeName = re.compile("([^'\" ]+get(?:%2F|/)" + episode + ").*?>(.*?)</a>").search(content)
 			if episodeName:
 				listitem = xbmcgui.ListItem(self.unescape(self.stripHtml(episodeName.group(2))), iconImage=image, thumbnailImage=image)
 				if flv:
 					episodeName = re.compile("\"url\": \"http://www.ex.ua(/show/%s/[abcdef0-9]+.flv)\"" % episode).search(content)
-				resultPlaylist.add(self.URL + episodeName.group(1), listitem)
+				resultPlaylist.add(self.formUrl(episodeName.group(1)), listitem)
 		if 1 == resultPlaylist.size():
 			player = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
 			player.play(resultPlaylist)
@@ -118,7 +122,16 @@ class Core:
 			listitem.setInfo(type = 'Video', infoLabels = {"Title":title})
 		xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=isFolder)
 
+	def formUrl(self, url):
+		if re.search("^/", url):
+			url = self.URL + url
+		if re.search("uaproxy", url):
+			url = url + '&hl=2e7'
+
+		return url
+	
 	def fetchData(self, url):
+		url = self.formUrl(url)
 		request = urllib2.Request(url)
 		request.add_header('User-Agent', self.USERAGENT)
 		if self.__settings__.getSetting("auth"):
@@ -174,15 +187,20 @@ class Core:
 			self.sectionMenu()
 
 	def sectionMenu(self):
-		sections = self.fetchData("%s/%s/video" % (self.URL, self.LANGUAGE))
-		for (link, sectionName, count) in re.compile("<a href='(.+?)'><b>(.+?)</b></a><p><a href='.+?' class=info>.+?: (\d+)</a>").findall(sections):
+		sections = self.fetchData("/%s/video" % (self.LANGUAGE))
+		soup = BeautifulSoup(sections)
+		for section in soup.find('table', {'class': 'include_0'}).findAll('td', {'align': 'center', 'valign': 'center'}):
+			link = section.a.get('href')
+			sectionName = section.b.string.encode('utf8')
+			count = re.sub('^.+?(\d+)$', '\g<1>', section.p.a.string.encode('utf8'))
+			# Remove megogo category
 			if re.compile("/17031949\?").search(link):
 				continue
-			self.drawItem(sectionName + ' (' + count + ')', 'openSection', self.URL + link)
+			self.drawItem(sectionName + ' (' + count + ')', 'openSection', link)
 		self.drawItem(self.localize('< Search Everywhere >'), 'searchAll', image=self.ROOT + '/icons/search.png')
 		self.drawItem(self.localize('< Search User Page >'), 'searchUser', image=self.ROOT + '/icons/search_user.png')
 		if self.__settings__.getSetting("auth"):
-			self.drawItem(self.localize('< User Bookmarks >'), 'openSearch', self.URL + '/buffer', self.ROOT + '/icons/bookmarks.png')
+			self.drawItem(self.localize('< User Bookmarks >'), 'openSearch', '/buffer', self.ROOT + '/icons/bookmarks.png')
 			self.drawItem(self.localize('< User Logout >'), 'logoutUser', image=self.ROOT + '/icons/logout.png')
 		else:
 			self.drawItem(self.localize('< User Login >'), 'loginUser', image=self.ROOT + '/icons/login.png')
@@ -194,7 +212,8 @@ class Core:
 		url = urllib.unquote_plus(get("url"))
 		if 'True' == get("contentReady"):
 			videos = self.__settings__.getSetting("lastContent")
-			if 0 == len(re.compile(">?<a href='([^><']+?)'><img src='([^><']+?)\?\d+?' .+? alt='(.+?)'></a>.+?</small><p>(.*?)&nbsp;").findall(videos)):
+			soup = BeautifulSoup(videos)
+			if 0 == len(soup.find('table', {'class': 'include_0'}).findAll('td', {'align': 'center', 'valign': 'center'})):
 				videos = self.fetchData(url)
 		else:
 			videos = self.fetchData(url)
@@ -203,16 +222,20 @@ class Core:
 			self.drawItem(self.localize('< Search >'), 'openSearch', originalId.group(1), self.ROOT + '/icons/search.png')
 		else:
 			self.drawItem(self.localize('< Search >'), 'openSearch', re.search("(\d+)$", url).group(1), self.ROOT + '/icons/search.png')
-		for (link, image, title, comments) in re.compile(">?<a href='([^><']+?)'><img src='([^><']+?)\?\d+?' .+? alt='(.+?)'></a>.+?</small><p>(.*?)&nbsp;").findall(videos):
-			if comments:
-				comments = " [%s]" % re.sub('.+?>(.+?)</a>', '\g<1>', comments)
+		soup = BeautifulSoup(videos)
+		for video in soup.find('table', {'class': 'include_0'}).findAll('td', {'align': 'center', 'valign': 'center'}):
+			link = video.p.a.get('href')
+			image = video.a.img.get('src')
+			title = video.p.a.b.string.encode('utf8')
+			if video.find('a', {'class': 'info'}):
+				title = "%s [%s]" % (title, video.find('a', {'class': 'info'}).string.encode('utf8'))
 			contextMenu = [
 				(
 					self.localize('Search Like That'),
 					'XBMC.Container.Update(%s)' % ('%s?action=%s&url=%s&like=%s' % (sys.argv[0], 'openSearch', re.search("(\d+)$", url).group(1), urllib.quote_plus(self.unescape(title))))
 				)
 			]
-			self.drawItem(self.unescape(title + comments), 'openPage', self.URL + link, image + '?200', contextMenu=contextMenu)
+			self.drawItem(self.unescape(title), 'openPage', link, image, contextMenu=contextMenu)
 		self.drawPaging(videos, 'openSection')
 		self.lockView('info')
 		xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
@@ -227,17 +250,22 @@ class Core:
 			keyboard.doModal()
 			query = keyboard.getText()
 			if keyboard.isConfirmed() and query:
-				url = '%s/search?original_id=%s&s=%s' % (self.URL, re.search("(\d+)$", get("url")).group(1), urllib.quote_plus(query))
+				url = '/search?original_id=%s&s=%s' % (re.search("(\d+)$", get("url")).group(1), urllib.quote_plus(query))
 			else:
 				return
 		else:
 			url = urllib.unquote_plus(get("url"))
 		videos = self.fetchData(url)
-		for (link, image, title, comments) in re.compile(">?<a href='([^><']+?)'><img src='([^><']+?)\?\d+?' .+? alt='(.+?)'></a>.+?</small>.*?>(.+?)</td>", re.DOTALL).findall(videos):
-			comments = re.search("<a href='/view_comments.+?>(.+?)</a>", comments)
-			if comments:
-				title = "%s [%s]" % (title, comments.group(1))
-			self.drawItem(self.unescape(title), 'openPage', self.URL + link, image + '?200')
+		soup = BeautifulSoup(videos)
+		for video in soup.find('table', {'class': 'panel'}).findAll('td'):
+			if not video.contents[1].b:
+				continue
+			link = video.a.get('href')
+			image = video.a.img.get('src')
+			title = video.contents[1].b.string.encode('utf8')
+			if video.find('a', {'class': 'info'}):
+				title = "%s [%s]" % (title, video.find('a', {'class': 'info'}).string.encode('utf8'))
+			self.drawItem(self.unescape(title), 'openPage', link, image)
 		self.drawPaging(videos, 'openSearch')
 		self.lockView('info')
 		xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
@@ -249,7 +277,7 @@ class Core:
 		if not query:
 			return
 		elif keyboard.isConfirmed():
-			params["url"] = urllib.quote_plus(self.URL + '/search?s=' + query)
+			params["url"] = urllib.quote_plus('/search?s=' + query)
 			self.openSearch(params)
 
 	def searchUser(self, params = {}):
@@ -259,13 +287,13 @@ class Core:
 		if not query:
 			return
 		elif keyboard.isConfirmed():
-			params["url"] = self.URL + '/user/' + query
+			params["url"] = '/user/' + query
 			self.openSearch(params)
 	
 	def leaveComment(self, params = {}):
 		get = params.get
 		if re.match('\d+', get("url")) and self.__settings__.getSetting("auth"):
-			content = self.fetchData(self.URL + '/edit?original_id=' + get("url") + '&link_id=2')
+			content = self.fetchData('/edit?original_id=' + get("url") + '&link_id=2')
 			commentId = re.compile("<form name=edit method=post action='/edit/(\d+)'>").search(content).group(1)
 			
 			if re.match('\d+', commentId):
@@ -279,7 +307,7 @@ class Core:
 				if not text:
 					return
 
-				request = urllib2.Request(self.URL + '/r_edit/' + commentId, urllib.urlencode({'avatar_id' : 0, 'post' : text, 'public' : -1, 'title' : title}))
+				request = urllib2.Request('/r_edit/' + commentId, urllib.urlencode({'avatar_id' : 0, 'post' : text, 'public' : -1, 'title' : title}))
 				request.add_header('Cookie', self.__settings__.getSetting("auth"))
 				try:
 					connection = urllib2.urlopen(request)
@@ -365,9 +393,9 @@ class Core:
 	def playM3U(self, params = {}):
 		content = self.__settings__.getSetting("lastContent")
 		if content:
-			m3uPlaylistUrl = re.compile(".*<a href='(.*?).m3u' rel='nofollow'><b>.*</b></a>").search(content)
+			m3uPlaylistUrl = re.compile("([^'\" ]+).m3u").search(content)
 			if m3uPlaylistUrl:
-				m3uPlaylist = re.compile(".*/get/(\d+).*").findall(self.fetchData(self.URL + m3uPlaylistUrl.group(1) + '.m3u'))
+				m3uPlaylist = re.compile(".*/get/(\d+).*").findall(self.fetchData(m3uPlaylistUrl.group(1) + '.m3u'))
 				if m3uPlaylist:
 					self.createPlaylist(m3uPlaylist, content, False)
 
@@ -390,6 +418,7 @@ class Core:
 		get = params.get
 		content = self.fetchData(urllib.unquote_plus(get("url")))
 		self.__settings__.setSetting("lastContent", content)
+		soup = BeautifulSoup(content)
 		artistMenu = re.compile("<div class=\"pg_menu\">.*?<a.+?</a>.*?<a(.+?)>.+?</div>", re.DOTALL).search(content)
 		if artistMenu:
 			if re.compile("class=\"active\"").search(artistMenu.group(1)):
@@ -397,15 +426,15 @@ class Core:
 			else:
 				anchor = re.compile("href=\"(/view/\d+)\"").search(artistMenu.group(1))
 				if anchor.group(1):
-					params['url'] = urllib.quote_plus(self.URL + anchor.group(1))
+					params['url'] = urllib.quote_plus(anchor.group(1))
 					return self.openPage(params)
 
-		filelist = re.compile("<a href='/filelist/(\d+).urls' rel='nofollow'>").search(content)
+		filelist = re.compile("(\d+).urls").search(soup.find('td', {'colspan': 3, 'valign': 'bottom'}).a.get('href'))
 		details = re.compile(">(.+?)?<h1>(.+?)</h1>(.+?)</td>", re.DOTALL).search(content)
 		if details and filelist:
 			if re.compile("\"url\": \"http://www.ex.ua/show/\d+/[abcdef0-9]+.flv\"").search(content):
 				self.drawItem(self.localize('FLV Playlist'), 'playFLV', '', self.ROOT + '/icons/flash.png', False)
-			if re.compile(".*<a href='.*?.m3u' rel='nofollow'><b>.*</b></a>").search(content):
+			if re.compile("[^'\" ].m3u").search(content):
 				self.drawItem(self.localize('M3U Playlist'), 'playM3U', '', self.ROOT + '/icons/video.png', False)
 			image = re.compile("<img src='(http.+?\?800)'").search(details.group(1))
 			if image:
@@ -419,7 +448,7 @@ class Core:
 			comments = re.compile("<a href='(/view_comments/\d+).+?(\d+)</a>").search(content)
 			if comments:
 				description += self.localize('[B]:::Comments:::[/B]\n\n')
-				commentsContent = self.fetchData(self.URL + comments.group(1))
+				commentsContent = self.fetchData(comments.group(1))
 				for (commentTitle, comment) in re.compile("<a href='/view_comments/\d+'><b>(.+?)</b>.+?<p>(.+?)<p>", re.DOTALL).findall(commentsContent):
 					description += "[B]%s[/B]%s" % (commentTitle, comment)
 				listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [%s]' % comments.group(2), iconImage=self.ROOT + '/icons/description.png')
@@ -456,7 +485,7 @@ class Core:
 		except:
 			action = actions['page']
 		if re.match('\d+', pageId) and self.__settings__.getSetting("auth"):
-			self.fetchData(self.URL + '/add_link/' + str(pageId) + '/?link_id=' + str(action))
+			self.fetchData('/add_link/' + str(pageId) + '/?link_id=' + str(action))
 			xbmc.executebuiltin("Notification(%s, %s, 2500)" % (self.localize('Item Saving'), self.localize('Item saved successfully')))
 			xbmc.executebuiltin("Container.Refresh()")
 		else:

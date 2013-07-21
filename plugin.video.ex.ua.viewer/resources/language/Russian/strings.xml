@@ -5,4 +5,5 @@
     <string id="30003">Удерживать стиль отображения списков</string>
     <string id="30004">Оптимизировать под скин</string>
 	<string id="30005">Использовать шлюз http://fex.net</string>
+	<string id="30006">Использовать прокси http://uaproxy.com</string>
 </strings>

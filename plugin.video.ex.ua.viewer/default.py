@@ -25,9 +25,9 @@ __plugin__ = __settings__.getAddonInfo('name') + " v." + __version__
 __root__ = __settings__.getAddonInfo('path')
 
 if (__name__ == "__main__" ):
-	print __plugin__
+	#print __plugin__
 	import Core
-	import Localization
+	import Localization	
 	core = Core.Core(Localization.__localization__)
 	if (not sys.argv[2]):
 		core.sectionMenu()

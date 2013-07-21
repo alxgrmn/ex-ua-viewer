@@ -1,4 +1,8 @@
-﻿[B]Version 1.3.6[/B]
+﻿[B]Version 1.4.0[/B]
+- Beautiful soup used
+- Added uaproxy support
+
+[B]Version 1.3.6[/B]
 - Main icon updated
 
 [B]Version 1.3.5[/B]

@@ -32,4 +32,10 @@
 		label   = "30005"
 		default = "false"
 	/>
+	<setting
+		id      = "useproxy"
+		type    = "bool"
+		label   = "30006"
+		default = "false"
+	/>
 </settings>
