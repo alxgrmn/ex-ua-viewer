@@ -1,4 +1,7 @@
-﻿[B]Version 1.4.4[/B]
+﻿[B]Version 1.4.5[/B]
+- Fixed router
+
+[B]Version 1.4.4[/B]
 - Refactoring
 
 [B]Version 1.4.3[/B]

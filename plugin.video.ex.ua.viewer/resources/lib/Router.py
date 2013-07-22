@@ -36,6 +36,11 @@ class Router:
 		commands = {}
 		for command in parameterString[parameterString.find('?')+1:].split('&'): 
 			if (len(command) > 0):
-				(name, value) = command.split('=')
+				splitCommand = command.split('=')
+				name = splitCommand[0]
+				value = ''
+				if len(splitCommand) == 2:
+					value = splitCommand[1]
 				commands[name] = value
+
 		return commands
