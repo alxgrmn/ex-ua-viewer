@@ -1,4 +1,7 @@
-﻿[B]Version 1.4.5[/B]
+﻿[B]Version 1.4.6[/B]
+- Fixed non-image folders
+
+[B]Version 1.4.5[/B]
 - Fixed router
 
 [B]Version 1.4.4[/B]

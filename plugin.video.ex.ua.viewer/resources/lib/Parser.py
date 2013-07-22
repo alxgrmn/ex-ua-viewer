@@ -123,7 +123,8 @@ class Parser:
 		return result
 
 	def originalId(self, data):
-		return BeautifulSoup(data).find('input', {'name': 'original_id'})['value']
+		if BeautifulSoup(data).find('input', {'name': 'original_id'}):
+			return BeautifulSoup(data).find('input', {'name': 'original_id'})['value']
 
 	def leaveComment(self, params = {}):
 		get = params.get
