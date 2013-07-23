@@ -98,6 +98,23 @@ class Gui:
             listitem.setInfo(type = 'Video', infoLabels = {"Title":title})
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=isFolder)
 
+    def drawDetails(self, details, comments, count):
+        description = "-----------------------------------------------------------------------------------------\n"
+        description += self.localize('\n[B]:::Description:::[/B]\n')
+        description += details['description'].replace('смотреть онлайн', '')
+        if 0 < len(comments):
+            description += self.localize('[B]:::Comments:::[/B]\n\n')
+            for comment in comments:
+                description += "[B]%s[/B]%s" % (comment['title'], comment['comment'])
+        listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [%s]' % count, iconImage=self.ROOT + '/resources/media/icons/description.png')
+        description += "-----------------------------------------------------------------------------------------\n\n\n\n\n\n\n"
+        listitem.setInfo(type = 'Video', infoLabels = {
+            "Title": details['title'],
+            "Plot": description,
+        })
+        url = '%s?action=%s' % (sys.argv[0], 'showDetails')
+        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=False)
+
     def lockView(self, viewId):
         if 'true' == self.__settings__.getSetting("lock_view"):
             try:
@@ -229,83 +246,3 @@ class Gui:
             xbmc.executebuiltin("Action(Right)")
         if '0' == self.__settings__.getSetting("skin_optimization"):#Confluence
             xbmc.executebuiltin("Action(Up)")
-
-    def openPage(self, params = {}):
-        get = params.get
-        content = self.fetchData(urllib.unquote_plus(get("url")))
-        self.__settings__.setSetting("lastContent", content)
-        soup = BeautifulSoup(content)
-        artistMenu = re.compile("<div class=\"pg_menu\">.*?<a.+?</a>.*?<a(.+?)>.+?</div>", re.DOTALL).search(content)
-        if artistMenu:
-            if re.compile("class=\"active\"").search(artistMenu.group(1)):
-                pass
-            else:
-                anchor = re.compile("href=\"(/view/\d+)\"").search(artistMenu.group(1))
-                if anchor.group(1):
-                    params['url'] = urllib.quote_plus(anchor.group(1))
-                    return self.openPage(params)
-
-        filelist = None
-        if soup.find('td', {'colspan': 3, 'valign': 'bottom'}):
-            filelist = re.compile("(\d+).urls").search(soup.find('td', {'colspan': 3, 'valign': 'bottom'}).a.get('href'))
-        details = re.compile(">(.+?)?<h1>(.+?)</h1>(.+?)</td>", re.DOTALL).search(content)
-        if details and filelist:
-            if re.compile("\"url\": \"http://www.ex.ua/show/\d+/[abcdef0-9]+.flv\"").search(content):
-                self.drawItem(self.localize('FLV Playlist'), 'playFLV', '', self.ROOT + '/resources/media/icons/flash.png', False)
-            if re.compile("[^'\" ].m3u").search(content):
-                self.drawItem(self.localize('M3U Playlist'), 'playM3U', '', self.ROOT + '/resources/media/icons/video.png', False)
-            image = re.compile("<img src='(http.+?\?800)'").search(details.group(1))
-            if image:
-                image = image.group(1)
-            else:
-                image = self.ROOT + '/resources/media/icons/video.png'
-            title = details.group(2)
-            description = "-----------------------------------------------------------------------------------------\n"
-            description += self.localize('\n[B]:::Description:::[/B]\n')
-            description += details.group(3).replace('смотреть онлайн', '')
-            comments = re.compile("<a href='(/view_comments/\d+).+?(\d+)</a>").search(content)
-            if comments:
-                description += self.localize('[B]:::Comments:::[/B]\n\n')
-                commentsContent = self.fetchData(comments.group(1))
-                for (commentTitle, comment) in re.compile("<a href='/view_comments/\d+'><b>(.+?)</b>.+?<p>(.+?)<p>", re.DOTALL).findall(commentsContent):
-                    description += "[B]%s[/B]%s" % (commentTitle, comment)
-                listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [%s]' % comments.group(2), iconImage=self.ROOT + '/resources/media/icons/description.png')
-            else:
-                listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [0]', iconImage=self.ROOT + '/resources/media/icons/description.png')
-            description += "-----------------------------------------------------------------------------------------\n\n\n\n\n\n\n"
-            listitem.setInfo(type = 'Video', infoLabels = {
-                "Title":         self.unescape(self.stripHtml(title)),
-                "Plot":         self.unescape(self.stripHtml(description)) } )
-            url = '%s?action=%s' % (sys.argv[0], 'showDetails')
-            xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=True)
-            if self.__settings__.getSetting("auth"):
-                self.drawItem(self.localize('Leave\nComment'), 'leaveComment', filelist.group(1), self.ROOT + '/resources/media/icons/comment.png', False)
-                self.drawItem(self.localize('To My\nPage'), 'toMyPage', filelist.group(1), self.ROOT + '/resources/media/icons/add_to_user_page.png', False)
-                self.drawItem(self.localize('To My\nBookmarks'), 'toBookmarks', filelist.group(1), self.ROOT + '/resources/media/icons/add_bookmark.png', False)
-            self.lockView('icons')
-            xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
-        else:
-            url = '%s?action=%s&url=%s&contentReady=True' % (sys.argv[0], 'openSection', get("url"))
-            xbmc.executebuiltin("Container.Update(%s)" % url)
-
-    def toMyPage(self, params = {}):
-        get = params.get
-        self.addLink(get("url"), 'page')
-
-    def toBookmarks(self, params = {}):
-        get = params.get
-        self.addLink(get("url"), 'bookmark')
-
-    def addLink(self, pageId, actionName):
-        actions = {'page': 6, 'bookmark': 4}
-        try:
-            action = actions[actionName]
-        except:
-            action = actions['page']
-        if re.match('\d+', pageId) and self.__settings__.getSetting("auth"):
-            self.fetchData('/add_link/' + str(pageId) + '/?link_id=' + str(action))
-            xbmc.executebuiltin("Notification(%s, %s, 2500)" % (self.localize('Item Saving'), self.localize('Item saved successfully')))
-            xbmc.executebuiltin("Container.Refresh()")
-        else:
-            xbmc.executebuiltin("Notification(%s, %s, 2500)" % (self.localize('Item Saving'), self.localize('Item not saved')))
-            xbmc.executebuiltin("Container.Refresh()")

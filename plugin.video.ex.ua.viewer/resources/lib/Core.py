@@ -299,13 +299,12 @@ class Core:
                 self.createPlaylist(flvPlaylist, content)
 
     def showDetails(self, params = {}):
-        Gui.showDetails()
+        Gui().showDetails()
 
     def openPage(self, params = {}):
         get = params.get
         content = self.fetchData(urllib.unquote_plus(get("url")))
         self.__settings__.setSetting("lastContent", content)
-        soup = BeautifulSoup(content)
         artistMenu = re.compile("<div class=\"pg_menu\">.*?<a.+?</a>.*?<a(.+?)>.+?</div>", re.DOTALL).search(content)
         if artistMenu:
             if re.compile("class=\"active\"").search(artistMenu.group(1)):
@@ -313,50 +312,29 @@ class Core:
             else:
                 anchor = re.compile("href=\"(/view/\d+)\"").search(artistMenu.group(1))
                 if anchor.group(1):
-                    params['url'] = urllib.quote_plus(anchor.group(1))
+                    params.update({'url': urllib.quote_plus(anchor.group(1))})
                     return self.openPage(params)
 
-        filelist = None
-        if soup.find('td', {'colspan': 3, 'valign': 'bottom'}):
-            filelist = re.compile("(\d+).urls").search(soup.find('td', {'colspan': 3, 'valign': 'bottom'}).a.get('href'))
-        details = re.compile(">(.+?)?<h1>(.+?)</h1>(.+?)</td>", re.DOTALL).search(content)
-        if details and filelist:
-            if re.compile("\"url\": \"http://www.ex.ua/show/\d+/[abcdef0-9]+.flv\"").search(content):
+        fileId = Parser().fileId(content)
+        details = Parser().details(content)
+        if details and fileId:
+            if Parser().flv(content):
                 Gui().drawItem(self.localize('FLV Playlist'), 'playFLV', '', self.ROOT + '/resources/media/icons/flash.png', False)
-            if re.compile("[^'\" ].m3u").search(content):
+            if Parser().m3u(content):
                 Gui().drawItem(self.localize('M3U Playlist'), 'playM3U', '', self.ROOT + '/resources/media/icons/video.png', False)
-            image = re.compile("<img src='(http.+?\?800)'").search(details.group(1))
-            if image:
-                image = image.group(1)
-            else:
-                image = self.ROOT + '/resources/media/icons/video.png'
-            title = details.group(2)
-            description = "-----------------------------------------------------------------------------------------\n"
-            description += self.localize('\n[B]:::Description:::[/B]\n')
-            description += details.group(3).replace('смотреть онлайн', '')
             comments = re.compile("<a href='(/view_comments/\d+).+?(\d+)</a>").search(content)
             if comments:
-                description += self.localize('[B]:::Comments:::[/B]\n\n')
-                commentsContent = self.fetchData(comments.group(1))
-                for (commentTitle, comment) in re.compile("<a href='/view_comments/\d+'><b>(.+?)</b>.+?<p>(.+?)<p>", re.DOTALL).findall(commentsContent):
-                    description += "[B]%s[/B]%s" % (commentTitle, comment)
-                listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [%s]' % comments.group(2), iconImage=self.ROOT + '/resources/media/icons/description.png')
+                Gui().drawDetails(details, Parser().comments(self.fetchData(comments.group(1))), comments.group(2))
             else:
-                listitem = xbmcgui.ListItem(self.localize('Description &\nComments') + ' [0]', iconImage=self.ROOT + '/resources/media/icons/description.png')
-            description += "-----------------------------------------------------------------------------------------\n\n\n\n\n\n\n"
-            listitem.setInfo(type = 'Video', infoLabels = {
-                "Title":         Parser().unescape(Parser().stripHtml(title)),
-                "Plot":         Parser().unescape(Parser().stripHtml(description)) } )
-            url = '%s?action=%s' % (sys.argv[0], 'showDetails')
-            xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=True)
+                Gui().drawDetails(details, {}, 0)
             if self.__settings__.getSetting("auth"):
-                Gui().drawItem(self.localize('Leave\nComment'), 'leaveComment', filelist.group(1), self.ROOT + '/resources/media/icons/comment.png', False)
-                Gui().drawItem(self.localize('To My\nPage'), 'toMyPage', filelist.group(1), self.ROOT + '/resources/media/icons/add_to_user_page.png', False)
-                Gui().drawItem(self.localize('To My\nBookmarks'), 'toBookmarks', filelist.group(1), self.ROOT + '/resources/media/icons/add_bookmark.png', False)
+                Gui().drawItem(self.localize('Leave\nComment'), 'leaveComment', fileId, self.ROOT + '/resources/media/icons/comment.png', False)
+                Gui().drawItem(self.localize('To My\nPage'), 'toMyPage', fileId, self.ROOT + '/resources/media/icons/add_to_user_page.png', False)
+                Gui().drawItem(self.localize('To My\nBookmarks'), 'toBookmarks', fileId, self.ROOT + '/resources/media/icons/add_bookmark.png', False)
             Gui().lockView('icons')
         else:
-            url = '%s?action=%s&url=%s&contentReady=True' % (sys.argv[0], 'openSection', get("url"))
-            xbmc.executebuiltin("Container.Update(%s)" % url)
+            params.update({'contentReady': True})
+            self.openSection(params)
 
     def toMyPage(self, params = {}):
         get = params.get

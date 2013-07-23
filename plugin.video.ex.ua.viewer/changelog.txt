@@ -1,4 +1,9 @@
-﻿[B]Version 1.4.6[/B]
+﻿[B]Version 1.4.9[/B]
+- Changed image resolution
+- Refactored page opening
+- Optimized sections opening
+
+[B]Version 1.4.6[/B]
 - Fixed non-image folders
 
 [B]Version 1.4.5[/B]
