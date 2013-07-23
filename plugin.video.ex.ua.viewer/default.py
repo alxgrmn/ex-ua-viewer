@@ -1,7 +1,7 @@
 ﻿'''
     Ex.Ua.Viewer plugin for XBMC
     Copyright (C) 2011 Vadim Skorba
-	vadim.skorba@gmail.com
+    vadim.skorba@gmail.com
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,6 +25,6 @@ __plugin__ = __settings__.getAddonInfo('name') + " v." + __version__
 __root__ = __settings__.getAddonInfo('path')
 
 if (__name__ == "__main__" ):
-	sys.path.append(os.path.join(__root__, r'resources', r'lib'))
-	from Router import Router
-	Router(sys.argv[2])
+    sys.path.append(os.path.join(__root__, r'resources', r'lib'))
+    from Router import Router
+    Router(sys.argv[2])

@@ -1,7 +1,7 @@
 ﻿'''
     Ex.Ua.Viewer plugin for XBMC
     Copyright (C) 2011 Vadim Skorba
-	vadim.skorba@gmail.com
+    vadim.skorba@gmail.com
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,27 +20,27 @@
 from Core import Core
 
 class Router:
-	def __init__(self, action):
-		core = Core()
-		if (not action):
-			core.sectionMenu()
-		else:
-			params = self.getParameters(action)
-			get = params.get
-			if hasattr(core, get("action")):
-				getattr(core, get("action"))(params)
-			else:
-				core.sectionMenu()
+    def __init__(self, action):
+        core = Core()
+        if (not action):
+            core.sectionMenu()
+        else:
+            params = self.getParameters(action)
+            get = params.get
+            if hasattr(core, get("action")):
+                getattr(core, get("action"))(params)
+            else:
+                core.sectionMenu()
 
-	def getParameters(self, parameterString):
-		commands = {}
-		for command in parameterString[parameterString.find('?')+1:].split('&'): 
-			if (len(command) > 0):
-				splitCommand = command.split('=')
-				name = splitCommand[0]
-				value = ''
-				if len(splitCommand) == 2:
-					value = splitCommand[1]
-				commands[name] = value
+    def getParameters(self, parameterString):
+        commands = {}
+        for command in parameterString[parameterString.find('?')+1:].split('&'): 
+            if (len(command) > 0):
+                splitCommand = command.split('=')
+                name = splitCommand[0]
+                value = ''
+                if len(splitCommand) == 2:
+                    value = splitCommand[1]
+                commands[name] = value
 
-		return commands
+        return commands
