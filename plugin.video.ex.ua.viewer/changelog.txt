@@ -1,4 +1,7 @@
-﻿[B]Version 1.4.9[/B]
+﻿[B]Version 1.5.0[/B]
+- Removed *.pyo from 7z
+
+[B]Version 1.4.9[/B]
 - Changed image resolution
 - Refactored page opening
 - Optimized sections opening

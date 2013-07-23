@@ -50,10 +50,9 @@ infile = open(workingDir + 'plugin.video.ex.ua.viewer' + os.path.sep + 'addon.xm
 text = infile.read()
 infile.close()
 version = re.search('name="Ex.Ua Viewer" version="(.+?)"', text, re.DOTALL).group(1)
-os.system('7z.exe a plugin.video.ex.ua.viewer-%s.zip plugin.video.ex.ua.viewer' % version)
+os.system('7z.exe a -xr!*.pyo plugin.video.ex.ua.viewer-%s.zip plugin.video.ex.ua.viewer' % version)
 os.rename(workingDir + 'plugin.video.ex.ua.viewer-%s.zip' % version, workingDir + 'plugin.video.ex.ua.viewer' + os.path.sep + 'plugin.video.ex.ua.viewer-%s.zip' % version)
 
-os.system('hg add *')
 os.system('hg addremove')
 os.system('hg commit -u vadim.skorba@gmail.com')
 os.system('hg push -f https://vadim.skorba@ex-ua-viewer.googlecode.com/hg/')
