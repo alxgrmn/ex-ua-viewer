@@ -25,6 +25,5 @@ __plugin__ = __settings__.getAddonInfo('name') + " v." + __version__
 __root__ = __settings__.getAddonInfo('path')
 
 if (__name__ == "__main__" ):
-    sys.path.append(os.path.join(__root__, r'resources', r'lib'))
-    from Router import Router
+    from resources.lib.Router import Router
     Router(sys.argv[2])
