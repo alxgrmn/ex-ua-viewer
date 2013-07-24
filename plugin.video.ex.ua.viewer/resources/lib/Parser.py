@@ -93,7 +93,9 @@ class Parser:
             title = item.findAll('a')[1].b.string.encode('utf8')
         else:
             image = self.ROOT + '/resources/media/icons/video.png'
-            title = item.findAll('a')[0].b.string.encode('utf8')
+            title = ''
+            if item.findAll('a')[0].find('b'):
+                title = item.findAll('a')[0].b.string.encode('utf8')
         if item.find('a', {'class': 'info'}):
             title = "%s [%s]" % (title, item.find('a', {'class': 'info'}).string.encode('utf8'))
 
