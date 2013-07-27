@@ -121,7 +121,7 @@ class Gui:
                 xbmc.executebuiltin("Container.SetViewMode(%s)" % str(self.skinOptimizations[int(self.__settings__.getSetting("skin_optimization"))][viewId]))
             except:
                 pass
-            xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
+        xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
 
     def leaveComment(self, params = {}):
         get = params.get
