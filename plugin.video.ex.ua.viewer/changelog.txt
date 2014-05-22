@@ -1,4 +1,7 @@
-﻿[B]Version 1.5.3[/B]
+﻿[B]Version 1.5.4[/B]
+- Gotham fixed
+
+[B]Version 1.5.3[/B]
 - Fixed bug with view locking
 
 [B]Version 1.5.2[/B]
